@@ -1,0 +1,149 @@
+[
+  {
+    "serviceName": "Birth Doula",
+    "clientPrice": 1650,
+    "doulaPayout": 1225,
+    "agencyProfit": 425,
+    "id": 1763965460175
+  },
+  {
+    "serviceName": "PP Day / hr",
+    "clientPrice": 44,
+    "doulaPayout": 33,
+    "agencyProfit": 11,
+    "id": 1763965478145
+  },
+  {
+    "serviceName": "PP Night / hr",
+    "clientPrice": 45,
+    "doulaPayout": 35,
+    "agencyProfit": 10,
+    "id": 1763965488471
+  },
+  {
+    "serviceName": "In-Home Feeding Support",
+    "clientPrice": 250,
+    "doulaPayout": 220,
+    "agencyProfit": 30,
+    "id": 1763965504197
+  },
+  {
+    "serviceName": "Virtual Feeding Support",
+    "clientPrice": 230,
+    "doulaPayout": 200,
+    "agencyProfit": 30,
+    "id": 1763965520453
+  },
+  {
+    "serviceName": "Follow-Up Feeding Support",
+    "clientPrice": 180,
+    "doulaPayout": 150,
+    "agencyProfit": 30,
+    "id": 1763965538350
+  },
+  {
+    "serviceName": "Private Birthing Class",
+    "clientPrice": 400,
+    "doulaPayout": 350,
+    "agencyProfit": 50,
+    "id": 1763965550335
+  },
+  {
+    "serviceName": "Breastfeeding Essentials Class",
+    "clientPrice": 200,
+    "doulaPayout": 150,
+    "agencyProfit": 50,
+    "id": 1763965566666
+  },
+  {
+    "serviceName": "Postpartum Consultations",
+    "clientPrice": 200,
+    "doulaPayout": 150,
+    "agencyProfit": 50,
+    "id": 1763965585840
+  },
+  {
+    "serviceName": "Stat - PP Day / hr",
+    "clientPrice": 66,
+    "doulaPayout": 49.5,
+    "agencyProfit": 16.5,
+    "id": 1763965599655
+  },
+  {
+    "serviceName": "Stat - PP Night / hr",
+    "clientPrice": 67.5,
+    "doulaPayout": 52.5,
+    "agencyProfit": 15,
+    "id": 1763965616387
+  },
+  {
+    "serviceName": "Leading Light Birth",
+    "clientPrice": 500,
+    "doulaPayout": 400,
+    "agencyProfit": 100,
+    "id": 1763965626345
+  },
+  {
+    "serviceName": "Birth Pool",
+    "clientPrice": 350,
+    "doulaPayout": 200,
+    "agencyProfit": 150,
+    "id": 1763965636987
+  },
+  {
+    "serviceName": "Maternity Photography",
+    "clientPrice": 575,
+    "doulaPayout": 475,
+    "agencyProfit": 100,
+    "id": 1763965647454
+  },
+  {
+    "serviceName": "Newborn Photography",
+    "clientPrice": 750,
+    "doulaPayout": 650,
+    "agencyProfit": 100,
+    "id": 1763965655328
+  },
+  {
+    "serviceName": "Birth Plan",
+    "clientPrice": 0,
+    "doulaPayout": 0,
+    "agencyProfit": 0,
+    "id": 1763965672542
+  },
+  {
+    "serviceName": "CBE - Indv",
+    "clientPrice": 0,
+    "doulaPayout": 0,
+    "agencyProfit": 0,
+    "id": 1763965686490
+  },
+  {
+    "serviceName": "CBE - Group",
+    "clientPrice": 0,
+    "doulaPayout": 0,
+    "agencyProfit": 0,
+    "id": 1763965692014
+  },
+  {
+    "serviceName": "Indv Counselling 50m",
+    "clientPrice": 0,
+    "doulaPayout": 0,
+    "agencyProfit": 0,
+    "id": 1763965698949
+  },
+  {
+    "serviceName": "Cpls Counselling 50m",
+    "clientPrice": 0,
+    "doulaPayout": 0,
+    "agencyProfit": 0,
+    "id": 1763965704637
+  },
+  {
+    "serviceName": "Cpls Counselling 1hr 20m",
+    "clientPrice": 0,
+    "doulaPayout": 0,
+    "agencyProfit": 0,
+    "id": 1763965710873
+  }
+]

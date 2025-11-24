@@ -1,0 +1,130 @@
+[
+  {
+    "name": "Sarah Williamson",
+    "phone": "4167052986",
+    "email": "sarahjoleitch@hotmail.com",
+    "address": "1975 ROSEFIELD RD",
+    "servicesOffered": "All Things Doula",
+    "id": 1763965742560
+  },
+  {
+    "name": "Sarah Jane Rioux",
+    "phone": "289-893-3015",
+    "email": "sarah@sarahjanethedoula.ca",
+    "address": "12200 ON-12 Port Perry, ON L9L 1B5",
+    "servicesOffered": "Birth Doula, Postpartum Doula",
+    "id": 1763965764929
+  },
+  {
+    "name": "Chimaya Brookes",
+    "phone": "647-829-4260",
+    "email": "hello@thewelldoula.com",
+    "address": "152 Generation Blvd, Scarborough, Ontario, M1B 2V1",
+    "servicesOffered": "Postpartum Doula",
+    "id": 1763965781422
+  },
+  {
+    "name": "Katie Crane",
+    "phone": "647-997-1302",
+    "email": "hello@katiecranephotography.com",
+    "address": "224-5580 Sheppard Ave East Unit 224",
+    "servicesOffered": "Photography",
+    "id": 1763965801577
+  },
+  {
+    "name": "Shannon Gray",
+    "phone": "416-885-5879",
+    "email": "bohobirthkeeper@gmail.com",
+    "address": "1202-1251 King St West, Toronto, Ontario, M6K1G7",
+    "servicesOffered": "Birth Doula, Postpartum Doula",
+    "id": 1763965824850
+  },
+  {
+    "name": "Bohdana Kohrzan",
+    "phone": "226-220-9263",
+    "email": "korzanbogdana@gmail.com",
+    "address": "1148 Ashland Court, Cobourg, Ontario, K9A 5S2",
+    "servicesOffered": "Birth Doula, Postpartum Doula",
+    "id": 1763965858634
+  },
+  {
+    "name": "Ariana Celli",
+    "phone": "416-992-2005",
+    "email": "celliariana@gmail.com",
+    "address": "2010 Islington Ave, Unit 1606, etobicoke ontario M9P3S8, Canada",
+    "servicesOffered": "Birth Doula, Postpartum Doula",
+    "id": 1763965876472
+  },
+  {
+    "name": "Krista Scetta",
+    "phone": "416-697-2325",
+    "email": "kristascetta@hotmail.com",
+    "address": "35 Westover Dr, Bowmanville ON L1C 0M7, Canada",
+    "servicesOffered": "Birth Doula, Postpartum Doula",
+    "id": 1763965895491
+  },
+  {
+    "name": "Anya D",
+    "phone": "anya.dimaculangan@themamacoach.com",
+    "email": "anya.dimaculangan@themamacoach.com",
+    "address": "948 Downing Court, Oshawa, ON, L1G 7R5",
+    "servicesOffered": "Registered Nurse, Educator, LC",
+    "id": 1763965913086
+  },
+  {
+    "name": "Coral Adams",
+    "phone": "647-226-1813",
+    "email": "coral.adams1@gmail.com",
+    "address": "64 Rosseau Crescent, Whitby ON L1P 1J3, Canada",
+    "servicesOffered": "Birth Doula, Postpartum Doula",
+    "id": 1763965939314
+  },
+  {
+    "name": "Abeo McCollin",
+    "phone": "905-259-0776",
+    "email": "abbysisnett@gmail.com",
+    "address": "116 Bathgate Crescent, Courtice Ontario L1E 0B5, Canada",
+    "servicesOffered": "Full Spectrum Doula",
+    "id": 1763965954138
+  },
+  {
+    "name": "Tisa Waldron",
+    "phone": "905-728-9317",
+    "email": "alike.t.w@gmail.com",
+    "address": "38 Deacon Lane, Ajax Ontario L1S 2T1, Canada",
+    "servicesOffered": "Birth Doula, Postpartum Doula",
+    "id": 1763965973918
+  },
+  {
+    "name": "Mel Nadeau",
+    "phone": "437-987-8108",
+    "email": "melfaynadeau@gmail.com",
+    "address": "650 Parliament St, Toronto On M4X1R3, Canada",
+    "servicesOffered": "Day - Time Postpartum Doula",
+    "id": 1763965988490
+  },
+  {
+    "name": "Ciera Jackson",
+    "phone": "647-540-9810",
+    "email": "cierathedoula@gmail.com",
+    "address": "592 Mactier Dr",
+    "servicesOffered": "Birth Doula, Postpartum Doula",
+    "id": 1763966002064
+  },
+  {
+    "name": "Juliet Beckwith",
+    "phone": "250-208-3412",
+    "email": "hello@julietthedoula.ca",
+    "address": "62 Robert Street",
+    "servicesOffered": "Birth Doula, Postpartum Doula",
+    "id": 1763966015352
+  },
+  {
+    "name": "Nwando Ononye",
+    "phone": "438-483-3555",
+    "email": "nwando.osagie@gmail.com",
+    "address": "2 Eva Road Etobicoke",
+    "servicesOffered": "Postpartum Doula",
+    "id": 1763966030294
+  }
+]
