@@ -202,6 +202,14 @@
             background: #a66650;
         }
 
+        .btn-edit {
+            background: #d4a574;
+        }
+
+        .btn-edit:hover {
+            background: #b8906a;
+        }
+
         .stats-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -282,15 +290,55 @@
             color: #8b7355;
         }
 
-        .empty-state {
-            text-align: center;
-            padding: 60px 20px;
-            color: #999;
+        .multi-select-wrapper {
+            border: 1px solid #e8e0d8;
+            padding: 10px;
+            max-height: 150px;
+            overflow-y: auto;
+            background: #fefefe;
         }
 
-        .empty-state p {
-            font-size: 1.1em;
-            margin-bottom: 20px;
+        .multi-select-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 5px 0;
+        }
+
+        .service-line-item {
+            display: flex;
+            gap: 10px;
+            align-items: end;
+            margin-bottom: 10px;
+            padding: 10px;
+            background: #f8f5f2;
+        }
+
+        .service-line-item select,
+        .service-line-item input {
+            flex: 1;
+        }
+
+        .btn-add-line {
+            background: #d4a574;
+            padding: 10px 20px;
+            margin-top: 10px;
+        }
+
+        .btn-remove-line {
+            background: #c17b5f;
+            padding: 10px 15px;
+        }
+
+        .summary-section {
+            margin-bottom: 40px;
+        }
+
+        .summary-section h3 {
+            color: #8b7355;
+            font-size: 1.5em;
+            font-weight: 300;
+            margin-bottom: 15px;
         }
     </style>
 </head>
@@ -302,11 +350,12 @@
         </header>
 
         <div class="nav-tabs">
-            <button class="tab-btn active" onclick="switchTab('bookings')">Bookings</button>
-            <button class="tab-btn" onclick="switchTab('doulas')">Doulas</button>
-            <button class="tab-btn" onclick="switchTab('services')">Services & Pricing</button>
-            <button class="tab-btn" onclick="switchTab('paychecks')">Paychecks</button>
-            <button class="tab-btn" onclick="switchTab('owner')">Owner Payout</button>
+            <button class="tab-btn active" onclick="switchTab('bookings', event)">Bookings</button>
+            <button class="tab-btn" onclick="switchTab('doulas', event)">Doulas</button>
+            <button class="tab-btn" onclick="switchTab('services', event)">Services & Pricing</button>
+            <button class="tab-btn" onclick="switchTab('paychecks', event)">Paychecks</button>
+            <button class="tab-btn" onclick="switchTab('owner', event)">Owner Payout</button>
+            <button class="tab-btn" onclick="switchTab('summary', event)">Summary Reports</button>
         </div>
 
         <!-- Bookings Tab -->
@@ -326,8 +375,7 @@
                         <th>Actions</th>
                     </tr>
                 </thead>
-                <tbody id="bookingsTableBody">
-                </tbody>
+                <tbody id="bookingsTableBody"></tbody>
             </table>
         </div>
 
@@ -346,8 +394,7 @@
                         <th>Actions</th>
                     </tr>
                 </thead>
-                <tbody id="doulasTableBody">
-                </tbody>
+                <tbody id="doulasTableBody"></tbody>
             </table>
         </div>
 
@@ -365,8 +412,7 @@
                         <th>Actions</th>
                     </tr>
                 </thead>
-                <tbody id="servicesTableBody">
-                </tbody>
+                <tbody id="servicesTableBody"></tbody>
             </table>
         </div>
 
@@ -387,8 +433,7 @@
                         <th>Actions</th>
                     </tr>
                 </thead>
-                <tbody id="paychecksTableBody">
-                </tbody>
+                <tbody id="paychecksTableBody"></tbody>
             </table>
         </div>
 
@@ -415,14 +460,17 @@
                         <th>Week</th>
                         <th>Gross Revenue</th>
                         <th>Doula Payouts</th>
-                        <th>HST</th>
-                        <th>Expenses</th>
                         <th>Net Income</th>
                     </tr>
                 </thead>
-                <tbody id="ownerTableBody">
-                </tbody>
+                <tbody id="ownerTableBody"></tbody>
             </table>
+        </div>
+
+        <!-- Summary Reports Tab -->
+        <div id="summary" class="tab-content">
+            <h2>Summary Reports</h2>
+            <div id="summaryContent"></div>
         </div>
     </div>
 
@@ -430,10 +478,11 @@
     <div id="bookingModal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
-                <h2>New Booking</h2>
+                <h2 id="bookingModalTitle">New Booking</h2>
                 <button class="close-btn" onclick="closeModal('bookingModal')">&times;</button>
             </div>
             <form id="bookingForm" onsubmit="saveBooking(event)">
+                <input type="hidden" name="id">
                 <div class="form-grid">
                     <div class="form-group">
                         <label>Client Name *</label>
@@ -446,12 +495,6 @@
                     <div class="form-group">
                         <label>Email *</label>
                         <input type="email" name="email" required>
-                    </div>
-                    <div class="form-group">
-                        <label>Services *</label>
-                        <select name="services" id="bookingServices" required>
-                            <option value="">Select Service</option>
-                        </select>
                     </div>
                     <div class="form-group">
                         <label>Assigned Doula</label>
@@ -473,6 +516,10 @@
                             <option value="Yes">Yes</option>
                         </select>
                     </div>
+                    <div class="form-group" style="grid-column: 1 / -1;">
+                        <label>Services *</label>
+                        <div class="multi-select-wrapper" id="bookingServicesContainer"></div>
+                    </div>
                 </div>
                 <button type="submit" class="btn">Save Booking</button>
             </form>
@@ -483,10 +530,11 @@
     <div id="doulaModal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
-                <h2>Add Doula</h2>
+                <h2 id="doulaModalTitle">Add Doula</h2>
                 <button class="close-btn" onclick="closeModal('doulaModal')">&times;</button>
             </div>
             <form id="doulaForm" onsubmit="saveDoula(event)">
+                <input type="hidden" name="id">
                 <div class="form-grid">
                     <div class="form-group">
                         <label>Name *</label>
@@ -518,10 +566,11 @@
     <div id="serviceModal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
-                <h2>Add Service</h2>
+                <h2 id="serviceModalTitle">Add Service</h2>
                 <button class="close-btn" onclick="closeModal('serviceModal')">&times;</button>
             </div>
             <form id="serviceForm" onsubmit="saveService(event)">
+                <input type="hidden" name="id">
                 <div class="form-grid">
                     <div class="form-group">
                         <label>Service Name *</label>
@@ -545,10 +594,11 @@
     <div id="paycheckModal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
-                <h2>Generate Paycheck</h2>
+                <h2 id="paycheckModalTitle">Generate Paycheck</h2>
                 <button class="close-btn" onclick="closeModal('paycheckModal')">&times;</button>
             </div>
             <form id="paycheckForm" onsubmit="savePaycheck(event)">
+                <input type="hidden" name="id">
                 <div class="form-grid">
                     <div class="form-group">
                         <label>Doula *</label>
@@ -564,16 +614,11 @@
                         <label>Invoice Date *</label>
                         <input type="date" name="invoiceDate" required>
                     </div>
-                    <div class="form-group">
-                        <label>Service *</label>
-                        <select name="service" id="paycheckService" required>
-                            <option value="">Select Service</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label>Quantity *</label>
-                        <input type="number" name="quantity" min="1" required>
-                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Services</label>
+                    <div id="paycheckServicesContainer"></div>
+                    <button type="button" class="btn btn-add-line" onclick="addPaycheckServiceLine()">+ Add Service</button>
                 </div>
                 <button type="submit" class="btn">Generate Paycheck</button>
             </form>
@@ -581,12 +626,13 @@
     </div>
 
 <script>
-const API_BASE = 'http://localhost:4000'; // '' for same origin, or e.g. 'http://localhost:3000'
+const API_BASE = 'http://localhost:4000';
 
 let bookings = [];
 let doulas = [];
 let services = [];
 let paychecks = [];
+let editingId = null;
 
 async function apiGet(path){
   const res = await fetch(API_BASE + path);
@@ -622,34 +668,111 @@ function switchTab(tabName, e) {
   document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
   document.getElementById(tabName).classList.add('active');
   if (e && e.target) e.target.classList.add('active');
+  
+  if (tabName === 'summary') {
+    renderSummary();
+  }
 }
 
-// modals (same as before)
-function openModal(modalId) { document.getElementById(modalId).classList.add('active'); }
-function closeModal(modalId) { document.getElementById(modalId).classList.remove('active'); }
+function openModal(modalId) { 
+  editingId = null;
+  document.getElementById(modalId).classList.add('active');
+  
+  if (modalId === 'bookingModal') {
+    document.getElementById('bookingModalTitle').textContent = 'New Booking';
+    document.getElementById('bookingForm').reset();
+    renderBookingServicesCheckboxes();
+  } else if (modalId === 'paycheckModal') {
+    document.getElementById('paycheckModalTitle').textContent = 'Generate Paycheck';
+    document.getElementById('paycheckForm').reset();
+    document.getElementById('paycheckServicesContainer').innerHTML = '';
+    addPaycheckServiceLine();
+  } else if (modalId === 'doulaModal') {
+    document.getElementById('doulaModalTitle').textContent = 'Add Doula';
+    document.getElementById('doulaForm').reset();
+  } else if (modalId === 'serviceModal') {
+    document.getElementById('serviceModalTitle').textContent = 'Add Service';
+    document.getElementById('serviceForm').reset();
+  }
+}
 
-// --- save handlers that POST to server ---
+function closeModal(modalId) { 
+  document.getElementById(modalId).classList.remove('active'); 
+  editingId = null;
+}
+
+function renderBookingServicesCheckboxes() {
+  const container = document.getElementById('bookingServicesContainer');
+  container.innerHTML = services.map(s => `
+    <div class="multi-select-item">
+      <input type="checkbox" id="service_${s.id}" value="${s.id}">
+      <label for="service_${s.id}">${escapeHtml(s.serviceName)}</label>
+    </div>
+  `).join('');
+}
+
+function addPaycheckServiceLine() {
+  const container = document.getElementById('paycheckServicesContainer');
+  const lineId = Date.now();
+  const serviceOptions = services.map(s => 
+    `<option value="${s.id}">${escapeHtml(s.serviceName)} (${Number(s.doulaPayout).toFixed(2)})</option>`
+  ).join('');
+  
+  const line = document.createElement('div');
+  line.className = 'service-line-item';
+  line.innerHTML = `
+    <div class="form-group" style="margin: 0;">
+      <label>Service</label>
+      <select class="paycheck-service" required>
+        <option value="">Select Service</option>
+        ${serviceOptions}
+      </select>
+    </div>
+    <div class="form-group" style="margin: 0;">
+      <label>Quantity</label>
+      <input type="number" class="paycheck-quantity" min="1" value="1" required>
+    </div>
+    <button type="button" class="btn btn-small btn-remove-line" onclick="this.parentElement.remove()">Remove</button>
+  `;
+  container.appendChild(line);
+}
+
 async function saveBooking(e) {
   e.preventDefault();
   try {
     const formData = new FormData(e.target);
+    const selectedServices = Array.from(document.querySelectorAll('#bookingServicesContainer input:checked'))
+      .map(cb => {
+        const service = services.find(s => s.id == cb.value);
+        return service ? service.serviceName : '';
+      })
+      .filter(Boolean);
+    
     const booking = {
       clientName: formData.get('clientName'),
       phone: formData.get('phone'),
       email: formData.get('email'),
-      services: formData.get('services'),
+      services: selectedServices.join(', '),
       assignedDoula: formData.get('assignedDoula'),
       status: formData.get('status'),
       paid: formData.get('paid')
     };
-    const created = await apiPost('/api/bookings', booking);
-    bookings.push(created);
+    
+    if (editingId) {
+      booking.id = editingId;
+      const updated = await apiPut(`/api/bookings/${editingId}`, booking);
+      const idx = bookings.findIndex(b => b.id === editingId);
+      if (idx !== -1) bookings[idx] = updated;
+    } else {
+      const created = await apiPost('/api/bookings', booking);
+      bookings.push(created);
+    }
+    
     renderBookings();
     closeModal('bookingModal');
     e.target.reset();
   } catch (err) {
     alert('Error saving booking: ' + err.message);
-    console.error(err);
   }
 }
 
@@ -664,15 +787,23 @@ async function saveDoula(e) {
       address: formData.get('address'),
       servicesOffered: formData.get('servicesOffered')
     };
-    const created = await apiPost('/api/doulas', doula);
-    doulas.push(created);
+    
+    if (editingId) {
+      doula.id = editingId;
+      const updated = await apiPut(`/api/doulas/${editingId}`, doula);
+      const idx = doulas.findIndex(d => d.id === editingId);
+      if (idx !== -1) doulas[idx] = updated;
+    } else {
+      const created = await apiPost('/api/doulas', doula);
+      doulas.push(created);
+    }
+    
     renderDoulas();
     updateDoulaDropdowns();
     closeModal('doulaModal');
     e.target.reset();
   } catch (err) {
     alert('Error saving doula: ' + err.message);
-    console.error(err);
   }
 }
 
@@ -688,15 +819,22 @@ async function saveService(e) {
       doulaPayout,
       agencyProfit: clientPrice - doulaPayout
     };
-    const created = await apiPost('/api/services', service);
-    services.push(created);
+    
+    if (editingId) {
+      service.id = editingId;
+      const updated = await apiPut(`/api/services/${editingId}`, service);
+      const idx = services.findIndex(s => s.id === editingId);
+      if (idx !== -1) services[idx] = updated;
+    } else {
+      const created = await apiPost('/api/services', service);
+      services.push(created);
+    }
+    
     renderServices();
-    updateServiceDropdowns();
     closeModal('serviceModal');
     e.target.reset();
   } catch (err) {
     alert('Error saving service: ' + err.message);
-    console.error(err);
   }
 }
 
@@ -704,35 +842,152 @@ async function savePaycheck(e) {
   e.preventDefault();
   try {
     const formData = new FormData(e.target);
-    const serviceId = Number(formData.get('service'));
-    const service = services.find(s => Number(s.id) === serviceId);
-    if (!service) return alert('Pick a valid service');
-    const quantity = parseInt(formData.get('quantity'), 10);
-    const subtotal = service.doulaPayout * quantity;
+    const serviceLines = document.querySelectorAll('.service-line-item');
+    
+    const serviceDetails = [];
+    let subtotal = 0;
+    
+    serviceLines.forEach(line => {
+      const serviceSelect = line.querySelector('.paycheck-service');
+      const quantityInput = line.querySelector('.paycheck-quantity');
+      
+      if (serviceSelect.value && quantityInput.value) {
+        const serviceId = Number(serviceSelect.value);
+        const service = services.find(s => s.id === serviceId);
+        const quantity = parseInt(quantityInput.value);
+        
+        if (service) {
+          serviceDetails.push({
+            name: service.serviceName,
+            quantity: quantity,
+            rate: service.doulaPayout,
+            amount: service.doulaPayout * quantity
+          });
+          subtotal += service.doulaPayout * quantity;
+        }
+      }
+    });
+    
     const hst = +(subtotal * 0.13).toFixed(2);
     const paycheck = {
       doula: formData.get('doula'),
       weekNumber: formData.get('weekNumber'),
       invoiceDate: formData.get('invoiceDate'),
-      service: service.serviceName,
-      quantity,
-      subtotal,
-      hst,
+      serviceDetails: serviceDetails,
+      subtotal: +subtotal.toFixed(2),
+      hst: hst,
       total: +(subtotal + hst).toFixed(2)
     };
-    const created = await apiPost('/api/paychecks', paycheck);
-    paychecks.push(created);
+    
+    if (editingId) {
+      paycheck.id = editingId;
+      const updated = await apiPut(`/api/paychecks/${editingId}`, paycheck);
+      const idx = paychecks.findIndex(p => p.id === editingId);
+      if (idx !== -1) paychecks[idx] = updated;
+    } else {
+      const created = await apiPost('/api/paychecks', paycheck);
+      paychecks.push(created);
+    }
+    
     renderPaychecks();
     updateOwnerPayout();
     closeModal('paycheckModal');
     e.target.reset();
   } catch (err) {
     alert('Error generating paycheck: ' + err.message);
-    console.error(err);
   }
 }
 
-// delete
+function editBooking(id) {
+  const booking = bookings.find(b => b.id === id);
+  if (!booking) return;
+  
+  editingId = id;
+  document.getElementById('bookingModalTitle').textContent = 'Edit Booking';
+  const form = document.getElementById('bookingForm');
+  form.elements.clientName.value = booking.clientName || '';
+  form.elements.phone.value = booking.phone || '';
+  form.elements.email.value = booking.email || '';
+  form.elements.assignedDoula.value = booking.assignedDoula || '';
+  form.elements.status.value = booking.status || '';
+  form.elements.paid.value = booking.paid || '';
+  
+  renderBookingServicesCheckboxes();
+  
+  const serviceNames = (booking.services || '').split(', ').map(s => s.trim());
+  serviceNames.forEach(name => {
+    const service = services.find(s => s.serviceName === name);
+    if (service) {
+      const checkbox = document.getElementById(`service_${service.id}`);
+      if (checkbox) checkbox.checked = true;
+    }
+  });
+  
+  openModal('bookingModal');
+}
+
+function editDoula(id) {
+  const doula = doulas.find(d => d.id === id);
+  if (!doula) return;
+  
+  editingId = id;
+  document.getElementById('doulaModalTitle').textContent = 'Edit Doula';
+  const form = document.getElementById('doulaForm');
+  form.elements.name.value = doula.name || '';
+  form.elements.phone.value = doula.phone || '';
+  form.elements.email.value = doula.email || '';
+  form.elements.address.value = doula.address || '';
+  form.elements.servicesOffered.value = doula.servicesOffered || '';
+  
+  openModal('doulaModal');
+}
+
+function editService(id) {
+  const service = services.find(s => s.id === id);
+  if (!service) return;
+  
+  editingId = id;
+  document.getElementById('serviceModalTitle').textContent = 'Edit Service';
+  const form = document.getElementById('serviceForm');
+  form.elements.serviceName.value = service.serviceName || '';
+  form.elements.clientPrice.value = service.clientPrice || '';
+  form.elements.doulaPayout.value = service.doulaPayout || '';
+  
+  openModal('serviceModal');
+}
+
+function editPaycheck(id) {
+  const paycheck = paychecks.find(p => p.id === id);
+  if (!paycheck) return;
+  
+  editingId = id;
+  document.getElementById('paycheckModalTitle').textContent = 'Edit Paycheck';
+  const form = document.getElementById('paycheckForm');
+  form.elements.doula.value = paycheck.doula || '';
+  form.elements.weekNumber.value = paycheck.weekNumber || '';
+  form.elements.invoiceDate.value = paycheck.invoiceDate || '';
+  
+  const container = document.getElementById('paycheckServicesContainer');
+  container.innerHTML = '';
+  
+  if (paycheck.serviceDetails && paycheck.serviceDetails.length > 0) {
+    paycheck.serviceDetails.forEach(detail => {
+      addPaycheckServiceLine();
+      const lines = container.querySelectorAll('.service-line-item');
+      const lastLine = lines[lines.length - 1];
+      const service = services.find(s => s.serviceName === detail.name);
+      if (service) {
+        lastLine.querySelector('.paycheck-service').value = service.id;
+        lastLine.querySelector('.paycheck-quantity').value = detail.quantity;
+      }
+    });
+  } else {
+    addPaycheckServiceLine();
+  }
+  
+  openModal('paycheckModal');
+}
+
 async function deleteItem(type, id) {
   if (!confirm('Are you sure you want to delete this item?')) return;
   try {
@@ -741,25 +996,21 @@ async function deleteItem(type, id) {
     if (type === 'doula') doulas = doulas.filter(d => d.id !== id);
     if (type === 'service') services = services.filter(s => s.id !== id);
     if (type === 'paycheck') paychecks = paychecks.filter(p => p.id !== id);
-    // re-render
+    
     renderBookings();
     renderDoulas();
     renderServices();
     renderPaychecks();
     updateOwnerPayout();
-    updateServiceDropdowns();
-    updateDoulaDropdowns();
   } catch (err) {
     alert('Delete failed: ' + err.message);
-    console.error(err);
   }
 }
 
-// renderers (same HTML as you had, just use current arrays)
 function renderBookings() {
   const tbody = document.getElementById('bookingsTableBody');
   if (!bookings || bookings.length === 0) {
-    tbody.innerHTML = '<tr><td colspan="8" style="text-align: center; padding: 40px; color: #999;">No bookings yet. Click "+ New Booking" to add one.</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="8" style="text-align: center; padding: 40px; color: #999;">No bookings yet.</td></tr>';
     return;
   }
   tbody.innerHTML = bookings.map(b => `
@@ -772,6 +1023,7 @@ function renderBookings() {
       <td>${escapeHtml(b.status)}</td>
       <td>${escapeHtml(b.paid)}</td>
       <td class="action-btns">
+        <button class="btn btn-small btn-edit" onclick="editBooking(${b.id})">Edit</button>
         <button class="btn btn-small btn-danger" onclick="deleteItem('booking', ${b.id})">Delete</button>
       </td>
     </tr>
@@ -781,7 +1033,7 @@ function renderBookings() {
 function renderDoulas() {
   const tbody = document.getElementById('doulasTableBody');
   if (!doulas || doulas.length === 0) {
-    tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; padding: 40px; color: #999;">No doulas yet. Click "+ Add Doula" to add one.</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; padding: 40px; color: #999;">No doulas yet.</td></tr>';
     return;
   }
   tbody.innerHTML = doulas.map(d => `
@@ -792,6 +1044,7 @@ function renderDoulas() {
       <td>${escapeHtml(d.address)}</td>
       <td>${escapeHtml(d.servicesOffered)}</td>
       <td class="action-btns">
+        <button class="btn btn-small btn-edit" onclick="editDoula(${d.id})">Edit</button>
         <button class="btn btn-small btn-danger" onclick="deleteItem('doula', ${d.id})">Delete</button>
       </td>
     </tr>
@@ -801,16 +1054,17 @@ function renderDoulas() {
 function renderServices() {
   const tbody = document.getElementById('servicesTableBody');
   if (!services || services.length === 0) {
-    tbody.innerHTML = '<tr><td colspan="5" style="text-align: center; padding: 40px; color: #999;">No services yet. Click "+ Add Service" to add one.</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="5" style="text-align: center; padding: 40px; color: #999;">No services yet.</td></tr>';
     return;
   }
   tbody.innerHTML = services.map(s => `
     <tr>
       <td>${escapeHtml(s.serviceName)}</td>
-      <td>$${Number(s.clientPrice).toFixed(2)}</td>
-      <td>$${Number(s.doulaPayout).toFixed(2)}</td>
-      <td>$${Number(s.agencyProfit).toFixed(2)}</td>
+      <td>${Number(s.clientPrice).toFixed(2)}</td>
+      <td>${Number(s.doulaPayout).toFixed(2)}</td>
+      <td>${Number(s.agencyProfit).toFixed(2)}</td>
       <td class="action-btns">
+        <button class="btn btn-small btn-edit" onclick="editService(${s.id})">Edit</button>
         <button class="btn btn-small btn-danger" onclick="deleteItem('service', ${s.id})">Delete</button>
       </td>
     </tr>
@@ -820,54 +1074,162 @@ function renderServices() {
 function renderPaychecks() {
   const tbody = document.getElementById('paychecksTableBody');
   if (!paychecks || paychecks.length === 0) {
-    tbody.innerHTML = '<tr><td colspan="8" style="text-align: center; padding: 40px; color: #999;">No paychecks yet. Click "+ Generate Paycheck" to add one.</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="8" style="text-align: center; padding: 40px; color: #999;">No paychecks yet.</td></tr>';
     return;
   }
-  tbody.innerHTML = paychecks.map(p => `
+  tbody.innerHTML = paychecks.map(p => {
+    const servicesDisplay = (p.serviceDetails || []).map(sd => 
+      `${sd.name} (${sd.quantity})`
+    ).join(', ');
+    
+    return `
     <tr>
       <td>${escapeHtml(p.doula)}</td>
       <td>${escapeHtml(p.weekNumber)}</td>
       <td>${escapeHtml(p.invoiceDate)}</td>
-      <td>${escapeHtml(p.service)} (${p.quantity})</td>
-      <td>$${Number(p.subtotal).toFixed(2)}</td>
-      <td>$${Number(p.hst).toFixed(2)}</td>
-      <td>$${Number(p.total).toFixed(2)}</td>
+      <td>${servicesDisplay || 'N/A'}</td>
+      <td>${Number(p.subtotal).toFixed(2)}</td>
+      <td>${Number(p.hst).toFixed(2)}</td>
+      <td>${Number(p.total).toFixed(2)}</td>
       <td class="action-btns">
+        <button class="btn btn-small btn-edit" onclick="editPaycheck(${p.id})">Edit</button>
         <button class="btn btn-small btn-danger" onclick="deleteItem('paycheck', ${p.id})">Delete</button>
       </td>
     </tr>
-  `).join('');
+  `}).join('');
 }
 
 function updateOwnerPayout() {
-  const totalRevenue = (services.reduce((sum, s) => sum + Number(s.clientPrice || 0), 0)) * (paychecks.length || 0);
+  // Calculate total revenue from all paychecks
+  const totalRevenue = paychecks.reduce((sum, p) => {
+    const paycheckRevenue = (p.serviceDetails || []).reduce((total, sd) => {
+      const service = services.find(s => s.serviceName === sd.name);
+      if (service) {
+        return total + (service.clientPrice * sd.quantity);
+      }
+      return total;
+    }, 0);
+    return sum + paycheckRevenue;
+  }, 0);
+
   const totalPayouts = paychecks.reduce((sum, p) => sum + Number(p.total || 0), 0);
   const netIncome = totalRevenue - totalPayouts;
 
-  document.getElementById('totalRevenue').textContent = `$${Number(totalRevenue).toFixed(2)}`;
-  document.getElementById('totalPayouts').textContent = `$${Number(totalPayouts).toFixed(2)}`;
-  document.getElementById('netIncome').textContent = `$${Number(netIncome).toFixed(2)}`;
+  document.getElementById('totalRevenue').textContent = `${totalRevenue.toFixed(2)}`;
+  document.getElementById('totalPayouts').textContent = `${totalPayouts.toFixed(2)}`;
+  document.getElementById('netIncome').textContent = `${netIncome.toFixed(2)}`;
+
+  // Group by week
+  const weeklyData = {};
+  paychecks.forEach(p => {
+    const week = p.weekNumber;
+    if (!weeklyData[week]) {
+      weeklyData[week] = { revenue: 0, payouts: 0 };
+    }
+    
+    const paycheckRevenue = (p.serviceDetails || []).reduce((total, sd) => {
+      const service = services.find(s => s.serviceName === sd.name);
+      if (service) {
+        return total + (service.clientPrice * sd.quantity);
+      }
+      return total;
+    }, 0);
+    
+    weeklyData[week].revenue += paycheckRevenue;
+    weeklyData[week].payouts += Number(p.total || 0);
+  });
+
+  const tbody = document.getElementById('ownerTableBody');
+  const weeks = Object.keys(weeklyData).sort((a, b) => Number(a) - Number(b));
+  
+  if (weeks.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="4" style="text-align: center; padding: 40px; color: #999;">No data yet.</td></tr>';
+    return;
+  }
+  
+  tbody.innerHTML = weeks.map(week => {
+    const data = weeklyData[week];
+    const net = data.revenue - data.payouts;
+    return `
+      <tr>
+        <td>Week ${week}</td>
+        <td>${data.revenue.toFixed(2)}</td>
+        <td>${data.payouts.toFixed(2)}</td>
+        <td>${net.toFixed(2)}</td>
+      </tr>
+    `;
+  }).join('');
+}
+
+function renderSummary() {
+  const container = document.getElementById('summaryContent');
+  
+  // Doula summary
+  const doulesSummary = {};
+  paychecks.forEach(p => {
+    if (!doulesSummary[p.doula]) {
+      doulesSummary[p.doula] = { weeks: {}, ytd: 0 };
+    }
+    if (!doulesSummary[p.doula].weeks[p.weekNumber]) {
+      doulesSummary[p.doula].weeks[p.weekNumber] = 0;
+    }
+    doulesSummary[p.doula].weeks[p.weekNumber] += Number(p.total || 0);
+    doulesSummary[p.doula].ytd += Number(p.total || 0);
+  });
+  
+  // Service summary
+  const serviceSummary = {};
+  paychecks.forEach(p => {
+    (p.serviceDetails || []).forEach(sd => {
+      if (!serviceSummary[sd.name]) {
+        serviceSummary[sd.name] = { weeks: {}, ytd: 0 };
+      }
+      if (!serviceSummary[sd.name].weeks[p.weekNumber]) {
+        serviceSummary[sd.name].weeks[p.weekNumber] = 0;
+      }
+      serviceSummary[sd.name].weeks[p.weekNumber] += sd.quantity;
+      serviceSummary[sd.name].ytd += sd.quantity;
+    });
+  });
+  
+  let html = '<div class="summary-section"><h3>Doula Earnings Summary</h3>';
+  
+  Object.keys(doulesSummary).forEach(doulaName => {
+    const data = doulesSummary[doulaName];
+    html += `<tr style="font-weight: bold; background: #f8f5f2;"><td>YTD Total</td><td>${data.ytd.toFixed(2)}</td></tr>`;
+    html += '</tbody></table>';
+  });
+  
+  html += '</div><div class="summary-section"><h3>Service Usage Summary</h3>';
+  
+  Object.keys(serviceSummary).forEach(serviceName => {
+    const data = serviceSummary[serviceName];
+    html += `<h4 style="color: #8b7355; margin: 20px 0 10px 0;">${escapeHtml(serviceName)}</h4>`;
+    html += '<table><thead><tr><th>Week</th><th>Quantity</th></tr></thead><tbody>';
+    
+    Object.keys(data.weeks).sort((a, b) => Number(a) - Number(b)).forEach(week => {
+      html += `<tr><td>Week ${week}</td><td>${data.weeks[week]}</td></tr>`;
+    });
+    
+    html += `<tr style="font-weight: bold; background: #f8f5f2;"><td>YTD Total</td><td>${data.ytd}</td></tr>`;
+    html += '</tbody></table>';
+  });
+  
+  html += '</div>';
+  container.innerHTML = html;
 }
 
 function updateDoulaDropdowns() {
   const selects = [document.getElementById('assignedDoula'), document.getElementById('paycheckDoula')];
   selects.forEach(select => {
     if (!select) return;
+    const currentValue = select.value;
     select.innerHTML = '<option value="">Select Doula</option>' + 
       doulas.map(d => `<option value="${escapeHtml(d.name)}">${escapeHtml(d.name)}</option>`).join('');
+    select.value = currentValue;
   });
 }
 
-function updateServiceDropdowns() {
-  const selects = [document.getElementById('bookingServices'), document.getElementById('paycheckService')];
-  selects.forEach(select => {
-    if (!select) return;
-    select.innerHTML = '<option value="">Select Service</option>' + 
-      services.map(s => `<option value="${s.id}">${escapeHtml(s.serviceName)}</option>`).join('');
-  });
-}
-
-// helper
 function escapeHtml(unsafe) {
   if (unsafe === undefined || unsafe === null) return '';
   return String(unsafe)
@@ -878,10 +1240,8 @@ function escapeHtml(unsafe) {
     .replace(/'/g, "&#039;");
 }
 
-// initial load
 window.addEventListener('load', async () => {
   try {
-    // load everything in one call (server provides /api/all)
     const all = await apiGet('/api/all');
     bookings = all.bookings || [];
     doulas = all.doulas || [];
@@ -892,12 +1252,10 @@ window.addEventListener('load', async () => {
     renderBookings();
     renderDoulas();
     renderPaychecks();
-    updateServiceDropdowns();
     updateDoulaDropdowns();
     updateOwnerPayout();
   } catch (err) {
     console.error('Initial load failed', err);
-    // fallback: try separate endpoints
     try {
       bookings = await apiGet('/api/bookings');
       doulas = await apiGet('/api/doulas');
@@ -907,12 +1265,11 @@ window.addEventListener('load', async () => {
       renderBookings();
       renderDoulas();
       renderPaychecks();
-      updateServiceDropdowns();
       updateDoulaDropdowns();
       updateOwnerPayout();
     } catch (err2) {
       console.error('Fallback load failed', err2);
-      alert('Could not reach backend. Make sure your JSON server is running.');
+      alert('Could not reach backend. Make sure your JSON server is running on port 4000.');
     }
   }
 });
