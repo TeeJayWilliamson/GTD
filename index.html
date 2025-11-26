@@ -421,6 +421,47 @@
             padding: 10px 15px;
         }
 
+        .paycheck-row {
+            cursor: pointer;
+        }
+
+        .paycheck-row:hover {
+            background: #f8f5f2;
+        }
+
+        .paycheck-details {
+            display: none;
+            background: #fefdfb;
+            padding: 15px;
+        }
+
+        .paycheck-details.expanded {
+            display: table-row;
+        }
+
+        .service-breakdown {
+            margin: 5px 0;
+            padding: 8px;
+            background: white;
+            border-left: 3px solid #d4a574;
+        }
+
+        .service-breakdown-line {
+            display: flex;
+            justify-content: space-between;
+            padding: 4px 0;
+        }
+
+        .expand-icon {
+            display: inline-block;
+            transition: transform 0.3s;
+            margin-right: 5px;
+        }
+
+        .expand-icon.expanded {
+            transform: rotate(90deg);
+        }
+
         .summary-section {
             margin-bottom: 40px;
         }
