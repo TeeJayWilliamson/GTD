@@ -224,7 +224,8 @@
             padding: 10px 8px;
             text-align: left;
             border-bottom: 1px solid #e8e0d8;
-            white-space: nowrap;
+            white-space: normal;
+            vertical-align: top;
         }
 
         @media (min-width: 768px) {
@@ -1103,12 +1104,14 @@ function renderBookings() {
     tbody.innerHTML = '<tr><td colspan="8" style="text-align: center; padding: 40px; color: #999;">No bookings yet.</td></tr>';
     return;
   }
-  tbody.innerHTML = bookings.map(b => `
+  tbody.innerHTML = bookings.map(b => {
+    const servicesDisplay = b.services ? b.services.split(', ').map(s => `<div>${escapeHtml(s)}</div>`).join('') : '';
+    return `
     <tr>
       <td>${escapeHtml(b.clientName)}</td>
       <td>${escapeHtml(b.phone)}</td>
       <td>${escapeHtml(b.email)}</td>
-      <td>${escapeHtml(b.services)}</td>
+      <td>${servicesDisplay}</td>
       <td>${escapeHtml(b.assignedDoula || 'Unassigned')}</td>
       <td>${escapeHtml(b.status)}</td>
       <td>${escapeHtml(b.paid)}</td>
@@ -1117,7 +1120,7 @@ function renderBookings() {
         <button class="btn btn-small btn-danger" onclick="deleteItem('booking', ${b.id})">Delete</button>
       </td>
     </tr>
-  `).join('');
+  `}).join('');
 }
 
 function renderDoulas() {
