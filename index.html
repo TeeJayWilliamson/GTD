@@ -5,473 +5,280 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Greater Toronto Doulas - Management System</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
+        :root {
+            --primary: #8b7355;
+            --secondary: #d4a574;
+            --bg: #f8f5f2;
+            --white: #ffffff;
+            --text: #444;
+            --gray-light: #e8e0d8;
+            --danger: #c17b5f;
         }
 
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
         body {
-            font-family: 'Helvetica Neue', Arial, sans-serif;
-            background: #f8f5f2;
-            min-height: 100vh;
-            padding: 10px;
-            color: #333;
+            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+            padding-bottom: 50px;
         }
 
         .container {
-            max-width: 1400px;
+            max-width: 1200px;
             margin: 0 auto;
-            width: 100%;
+            padding: 20px;
         }
 
-        @media (min-width: 768px) {
-            body {
-                padding: 20px;
-            }
-        }
-
+        /* --- Header --- */
         header {
-            background: white;
-            padding: 20px 15px;
-            margin-bottom: 20px;
             text-align: center;
-            border-bottom: 3px solid #d4a574;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--secondary);
         }
+        h1 { color: var(--primary); font-weight: 300; letter-spacing: 1px; margin-bottom: 5px;}
+        .tagline { color: #666; font-size: 0.9em; text-transform: uppercase; letter-spacing: 2px; }
 
-        h1 {
-            color: #8b7355;
-            font-size: 1.8em;
-            margin-bottom: 8px;
-            font-weight: 300;
-            letter-spacing: 1px;
-        }
-
-        .tagline {
-            color: #666;
-            font-size: 0.9em;
-            font-weight: 300;
-            letter-spacing: 0.5px;
-        }
-
-        @media (min-width: 768px) {
-            header {
-                padding: 40px 30px;
-                margin-bottom: 30px;
-            }
-
-            h1 {
-                font-size: 2.8em;
-            }
-
-            .tagline {
-                font-size: 1.1em;
-            }
-        }
-
+        /* --- Navigation --- */
         .nav-tabs {
             display: flex;
+            justify-content: center;
             gap: 10px;
-            margin-bottom: 20px;
+            margin-bottom: 30px;
             flex-wrap: wrap;
         }
-
         .tab-btn {
-            background: white;
-            border: 2px solid #e8e0d8;
-            padding: 10px 15px;
+            padding: 12px 24px;
+            background: transparent;
+            border: 1px solid var(--secondary);
+            color: var(--primary);
             cursor: pointer;
-            font-size: 0.85em;
-            font-weight: 400;
-            color: #8b7355;
-            transition: all 0.3s;
-            letter-spacing: 0.5px;
-            flex: 1 1 auto;
-            min-width: 120px;
+            border-radius: 30px;
+            transition: all 0.2s ease;
+            font-size: 0.9rem;
+            white-space: nowrap;
+        }
+        .tab-btn.active, .tab-btn:hover {
+            background: var(--primary);
+            color: var(--white);
+            border-color: var(--primary);
+            box-shadow: 0 4px 6px rgba(139, 115, 85, 0.2);
         }
 
-        @media (min-width: 768px) {
-            .tab-btn {
-                padding: 15px 30px;
-                font-size: 1em;
-                flex: 0 1 auto;
-            }
-        }
-
-        .tab-btn:hover {
-            background: #f8f5f2;
-            border-color: #d4a574;
-        }
-
-        .tab-btn.active {
-            background: #8b7355;
-            color: white;
-            border-color: #8b7355;
-        }
-
-        .tab-content {
-            display: none;
-            background: white;
-            padding: 20px 15px;
-        }
-
-        @media (min-width: 768px) {
-            .tab-content {
-                padding: 40px;
-            }
-        }
-
-        .tab-content.active {
-            display: block;
-            animation: fadeIn 0.4s;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
+        /* --- Tab Content --- */
+        .tab-content { display: none; animation: fadeIn 0.3s ease-in-out; }
+        .tab-content.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
 
         h2 {
-            color: #8b7355;
-            font-size: 1.5em;
+            color: var(--primary);
             font-weight: 300;
             margin-bottom: 20px;
-            letter-spacing: 0.5px;
         }
 
-        @media (min-width: 768px) {
-            h2 {
-                font-size: 2em;
-                margin-bottom: 25px;
-            }
-        }
-
-        .form-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 20px;
-            margin-bottom: 20px;
-        }
-
-        .form-group {
+        /* --- Controls (Search & Add) --- */
+        .controls-bar {
             display: flex;
-            flex-direction: column;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 15px;
         }
-
-        label {
-            font-weight: 400;
-            margin-bottom: 8px;
-            color: #666;
-            font-size: 0.95em;
-            letter-spacing: 0.3px;
-        }
-
-        input, select, textarea {
-            padding: 12px;
-            border: 1px solid #e8e0d8;
+        .search-input {
+            padding: 10px 15px;
+            border: 1px solid var(--gray-light);
+            border-radius: 8px;
+            width: 100%;
+            max-width: 300px;
             font-size: 1em;
-            transition: border 0.3s;
-            background: #fefefe;
         }
 
-        input:focus, select:focus, textarea:focus {
-            outline: none;
-            border-color: #d4a574;
-        }
-
-        .btn {
-            background: #8b7355;
-            color: white;
-            border: none;
-            padding: 14px 35px;
-            cursor: pointer;
-            font-size: 1em;
-            font-weight: 400;
-            transition: all 0.3s;
-            letter-spacing: 0.5px;
-        }
-
-        .btn:hover {
-            background: #6d5942;
-        }
-
-        .btn-secondary {
-            background: #e8e0d8;
-            color: #8b7355;
-        }
-
-        .btn-secondary:hover {
-            background: #d4a574;
-            color: white;
-        }
-
+        /* --- Tables (Desktop) --- */
         table {
             width: 100%;
-            border-collapse: collapse;
-            margin-top: 25px;
-            display: block;
-            overflow-x: auto;
-            -webkit-overflow-scrolling: touch;
+            border-collapse: separate;
+            border-spacing: 0 8px; /* Gap between rows */
+            margin-top: 10px;
         }
-
-        @media (min-width: 768px) {
-            table {
-                display: table;
-            }
-        }
-
-        th, td {
-            padding: 10px 8px;
-            text-align: left;
-            border-bottom: 1px solid #e8e0d8;
-            white-space: normal;
-            vertical-align: top;
-        }
-
-        @media (min-width: 768px) {
-            th, td {
-                padding: 15px 12px;
-            }
-        }
-
         th {
-            background: #f8f5f2;
-            font-weight: 400;
-            color: #8b7355;
-            letter-spacing: 0.5px;
-            font-size: 0.95em;
-        }
-
-        tr:hover {
-            background: #fefdfb;
-        }
-
-        .action-btns {
-            display: flex;
-            gap: 5px;
-            flex-wrap: wrap;
-        }
-
-        @media (min-width: 768px) {
-            .action-btns {
-                gap: 10px;
-            }
-        }
-
-        .btn-small {
-            padding: 6px 12px;
+            text-align: left;
+            padding: 15px;
+            color: var(--primary);
+            font-weight: 600;
+            text-transform: uppercase;
             font-size: 0.85em;
+            letter-spacing: 0.5px;
         }
-
-        @media (min-width: 768px) {
-            .btn-small {
-                padding: 8px 16px;
-                font-size: 0.9em;
-            }
+        tr {
+            background: var(--white);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.03);
+            transition: transform 0.2s;
         }
+        tr:hover { transform: translateY(-2px); box-shadow: 0 4px 8px rgba(0,0,0,0.05); }
+        
+        td { padding: 15px; border-top: 1px solid var(--gray-light); border-bottom: 1px solid var(--gray-light); vertical-align: middle; }
+        
+        td:first-child { border-left: 1px solid var(--gray-light); border-top-left-radius: 8px; border-bottom-left-radius: 8px; font-weight: 500; color: var(--primary); }
+        td:last-child { border-right: 1px solid var(--gray-light); border-top-right-radius: 8px; border-bottom-right-radius: 8px; }
 
-        .btn-danger {
-            background: #c17b5f;
+        /* --- Buttons --- */
+        .btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.95em;
+            transition: background 0.2s;
         }
+        .btn:hover { background: #6d5942; }
+        
+        .btn-secondary { background: var(--gray-light); color: var(--primary); }
+        .btn-secondary:hover { background: var(--secondary); color: white; }
 
-        .btn-danger:hover {
-            background: #a66650;
-        }
+        .btn-small { padding: 6px 12px; font-size: 0.8em; margin-right: 5px; border-radius: 4px; }
+        .btn-edit { background: var(--secondary); color: white; }
+        .btn-edit:hover { background: #b8906a; }
+        .btn-danger { background: var(--danger); color: white; }
+        .btn-danger:hover { background: #a66650; }
 
-        .btn-edit {
-            background: #d4a574;
-        }
+        .btn-add-line { background: var(--secondary); margin-top: 10px; width: 100%; }
+        .btn-remove-line { background: var(--danger); padding: 5px 10px; margin-left: 10px; }
 
-        .btn-edit:hover {
-            background: #b8906a;
-        }
-
+        /* --- Stats Grid --- */
         .stats-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
             gap: 20px;
             margin-bottom: 30px;
         }
-
         .stat-card {
-            background: white;
-            border: 2px solid #e8e0d8;
-            padding: 30px;
+            background: var(--white);
+            border: 1px solid var(--gray-light);
+            padding: 25px;
             text-align: center;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.03);
+        }
+        .stat-label { font-size: 0.85em; color: #999; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 1px; }
+        .stat-value { font-size: 2em; font-weight: 300; color: var(--primary); }
+
+        /* --- MOBILE RESPONSIVE LOGIC --- */
+        @media (max-width: 768px) {
+            .controls-bar { flex-direction: column-reverse; align-items: stretch; }
+            .search-input { max-width: 100%; }
+            
+            /* Force table to not be a table anymore */
+            table, thead, tbody, th, td, tr { display: block; }
+            
+            /* Hide headers */
+            thead tr { position: absolute; top: -9999px; left: -9999px; }
+            
+            tr {
+                margin-bottom: 15px;
+                border: 1px solid var(--gray-light);
+                border-radius: 8px;
+                padding: 5px;
+                position: relative;
+                cursor: pointer;
+            }
+
+            /* By default on mobile, hide all cells */
+            td { 
+                border: none; 
+                position: relative; 
+                padding: 8px 10px;
+                display: none; /* HIDE EVERYTHING INITIALLY */
+                text-align: left;
+            }
+
+            /* ALWAYS show the first cell (The Name) */
+            td:first-child { 
+                display: block; 
+                font-size: 1.1em;
+                border-bottom: none;
+                padding-right: 40px; /* Space for arrow */
+                color: var(--primary);
+                font-weight: 600;
+            }
+
+            /* Add a "Chevron" arrow to indicate expandability */
+            td:first-child::after {
+                content: '▼';
+                position: absolute;
+                right: 15px;
+                top: 50%;
+                transform: translateY(-50%);
+                font-size: 0.8em;
+                color: var(--secondary);
+                transition: transform 0.3s;
+            }
+
+            /* When the row has class 'expanded', rotate the arrow */
+            tr.expanded td:first-child::after { transform: translateY(-50%) rotate(180deg); }
+
+            /* When row is expanded, show all cells */
+            tr.expanded td { display: block; border-bottom: 1px solid #f0f0f0; }
+            tr.expanded td:last-child { border-bottom: none; }
+
+            /* Add labels so we know what the data is */
+            td:not(:first-child):not(:last-child):before {
+                content: attr(data-label);
+                font-weight: bold;
+                display: block;
+                color: #999;
+                font-size: 0.75em;
+                text-transform: uppercase;
+                margin-bottom: 2px;
+            }
+            
+            .action-btns { text-align: right; padding-top: 10px; display: flex; justify-content: flex-end; gap: 10px;}
         }
 
-        .stat-label {
-            font-size: 0.9em;
-            color: #999;
-            margin-bottom: 12px;
-            letter-spacing: 0.5px;
-            text-transform: uppercase;
-        }
-
-        .stat-value {
-            font-size: 2.2em;
-            font-weight: 300;
-            color: #8b7355;
-        }
-
+        /* --- Modals & Forms --- */
         .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.5);
-            z-index: 1000;
-            align-items: center;
-            justify-content: center;
+            display: none; position: fixed; z-index: 1000; left: 0; top: 0;
+            width: 100%; height: 100%; background-color: rgba(0,0,0,0.5);
+            backdrop-filter: blur(2px);
+            align-items: center; justify-content: center;
         }
-
-        .modal.active {
-            display: flex;
-        }
-
+        .modal.active { display: flex; }
         .modal-content {
-            background: white;
-            padding: 20px;
-            max-width: 600px;
-            width: 95%;
-            max-height: 90vh;
-            overflow-y: auto;
+            background-color: #fefefe; padding: 30px; border-radius: 12px;
+            width: 95%; max-width: 600px; max-height: 90vh; overflow-y: auto;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
         }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; border-bottom: 1px solid var(--gray-light); padding-bottom: 15px; }
+        .modal-header h2 { margin: 0; }
+        
+        .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-bottom: 20px;}
+        .form-group { display: flex; flex-direction: column; }
+        
+        label { margin-bottom: 5px; font-size: 0.9em; color: #666; }
+        input, select, textarea {
+            padding: 12px; border: 1px solid var(--gray-light); border-radius: 6px;
+            font-size: 1em; background: #fafafa; width: 100%;
+        }
+        input:focus, select:focus, textarea:focus { outline: 2px solid var(--secondary); border-color: transparent; }
+        
+        .close-btn { float: right; font-size: 2rem; cursor: pointer; border: none; background: none; color: #999; line-height: 1;}
+        .close-btn:hover { color: var(--primary); }
 
-        @media (min-width: 768px) {
-            .modal-content {
-                padding: 40px;
-                width: 90%;
-            }
-        }
-
-        .modal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 30px;
-            border-bottom: 2px solid #e8e0d8;
-            padding-bottom: 15px;
-        }
-
-        .modal-header h2 {
-            margin: 0;
-        }
-
-        .close-btn {
-            background: none;
-            border: none;
-            font-size: 2em;
-            cursor: pointer;
-            color: #999;
-            line-height: 1;
-        }
-
-        .close-btn:hover {
-            color: #8b7355;
-        }
-
-        .multi-select-wrapper {
-            border: 1px solid #e8e0d8;
-            padding: 10px;
-            max-height: 150px;
-            overflow-y: auto;
-            background: #fefefe;
-        }
-
-        .multi-select-item {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            padding: 5px 0;
-        }
-
-        .service-line-item {
-            display: flex;
-            gap: 10px;
-            align-items: end;
-            margin-bottom: 10px;
-            padding: 10px;
-            background: #f8f5f2;
-            flex-wrap: wrap;
-        }
-
-        .service-line-item select,
-        .service-line-item input {
-            flex: 1;
-            min-width: 120px;
-        }
-
-        @media (min-width: 768px) {
-            .service-line-item {
-                flex-wrap: nowrap;
-            }
-        }
-
-        .btn-add-line {
-            background: #d4a574;
-            padding: 10px 20px;
-            margin-top: 10px;
-        }
-
-        .btn-remove-line {
-            background: #c17b5f;
-            padding: 10px 15px;
-        }
-
-        .paycheck-row {
-            cursor: pointer;
-        }
-
-        .paycheck-row:hover {
-            background: #f8f5f2;
-        }
-
-        .paycheck-details {
-            display: none;
-            background: #fefdfb;
-            padding: 15px;
-        }
-
-        .paycheck-details.expanded {
-            display: table-row;
-        }
-
-        .service-breakdown {
-            margin: 5px 0;
-            padding: 8px;
-            background: white;
-            border-left: 3px solid #d4a574;
-        }
-
-        .service-breakdown-line {
-            display: flex;
-            justify-content: space-between;
-            padding: 4px 0;
-        }
-
-        .expand-icon {
-            display: inline-block;
-            transition: transform 0.3s;
-            margin-right: 5px;
-        }
-
-        .expand-icon.expanded {
-            transform: rotate(90deg);
-        }
-
-        .summary-section {
-            margin-bottom: 40px;
-        }
-
-        .summary-section h3 {
-            color: #8b7355;
-            font-size: 1.5em;
-            font-weight: 300;
-            margin-bottom: 15px;
-        }
+        /* Multi Select & Service Lines */
+        .multi-select-wrapper { border: 1px solid var(--gray-light); padding: 10px; max-height: 150px; overflow-y: auto; background: #fafafa; border-radius: 6px; }
+        .multi-select-item { display: flex; align-items: center; gap: 8px; padding: 5px 0; }
+        .multi-select-item input { width: auto; margin: 0; }
+        
+        .service-line-item { display: flex; gap: 10px; align-items: center; margin-bottom: 10px; padding: 10px; background: var(--bg); border-radius: 6px; flex-wrap: wrap; }
+        .service-line-item .form-group { flex: 1; min-width: 120px; margin: 0; }
+        
+        /* Summary Section */
+        .summary-section { margin-bottom: 40px; padding: 20px; background: white; border-radius: 8px; border: 1px solid var(--gray-light);}
+        .summary-section h3 { color: var(--primary); font-size: 1.3em; margin-bottom: 15px; }
     </style>
 </head>
 <body>
@@ -490,10 +297,12 @@
             <button class="tab-btn" onclick="switchTab('summary', event)">Summary Reports</button>
         </div>
 
-        <!-- Bookings Tab -->
         <div id="bookings" class="tab-content active">
             <h2>Client Bookings</h2>
-            <button class="btn" onclick="openModal('bookingModal')">+ New Booking</button>
+            <div class="controls-bar">
+                <button class="btn" onclick="openModal('bookingModal')">+ New Booking</button>
+                <input type="text" class="search-input" placeholder="Search clients..." onkeyup="filterTable('bookingsTable', this.value)">
+            </div>
             <table id="bookingsTable">
                 <thead>
                     <tr>
@@ -511,10 +320,12 @@
             </table>
         </div>
 
-        <!-- Doulas Tab -->
         <div id="doulas" class="tab-content">
             <h2>Doula Directory</h2>
-            <button class="btn" onclick="openModal('doulaModal')">+ Add Doula</button>
+            <div class="controls-bar">
+                <button class="btn" onclick="openModal('doulaModal')">+ Add Doula</button>
+                <input type="text" class="search-input" placeholder="Search doulas..." onkeyup="filterTable('doulasTable', this.value)">
+            </div>
             <table id="doulasTable">
                 <thead>
                     <tr>
@@ -530,10 +341,12 @@
             </table>
         </div>
 
-        <!-- Services Tab -->
         <div id="services" class="tab-content">
             <h2>Services & Pricing</h2>
-            <button class="btn" onclick="openModal('serviceModal')">+ Add Service</button>
+            <div class="controls-bar">
+                <button class="btn" onclick="openModal('serviceModal')">+ Add Service</button>
+                <input type="text" class="search-input" placeholder="Search services..." onkeyup="filterTable('servicesTable', this.value)">
+            </div>
             <table id="servicesTable">
                 <thead>
                     <tr>
@@ -548,10 +361,12 @@
             </table>
         </div>
 
-        <!-- Paychecks Tab -->
         <div id="paychecks" class="tab-content">
             <h2>Doula Paychecks</h2>
-            <button class="btn" onclick="openModal('paycheckModal')">+ Generate Paycheck</button>
+            <div class="controls-bar">
+                <button class="btn" onclick="openModal('paycheckModal')">+ Generate Paycheck</button>
+                <input type="text" class="search-input" placeholder="Search paychecks..." onkeyup="filterTable('paychecksTable', this.value)">
+            </div>
             <table id="paychecksTable">
                 <thead>
                     <tr>
@@ -569,7 +384,6 @@
             </table>
         </div>
 
-        <!-- Owner Payout Tab -->
         <div id="owner" class="tab-content">
             <h2>Owner Payout Summary</h2>
             <div class="stats-grid">
@@ -599,14 +413,12 @@
             </table>
         </div>
 
-        <!-- Summary Reports Tab -->
         <div id="summary" class="tab-content">
             <h2>Summary Reports</h2>
             <div id="summaryContent"></div>
         </div>
     </div>
 
-    <!-- Booking Modal -->
     <div id="bookingModal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
@@ -658,7 +470,6 @@
         </div>
     </div>
 
-    <!-- Doula Modal -->
     <div id="doulaModal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
@@ -694,7 +505,6 @@
         </div>
     </div>
 
-    <!-- Service Modal -->
     <div id="serviceModal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
@@ -722,7 +532,6 @@
         </div>
     </div>
 
-    <!-- Paycheck Modal -->
     <div id="paycheckModal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
@@ -758,7 +567,7 @@
     </div>
 
 <script>
-const API_BASE = 'https://gtd-1rkv.onrender.com'; // '' for same origin, or e.g. 'http://localhost:3000'
+const API_BASE = 'https://gtd-1rkv.onrender.com'; // Change to '' if hosted on same server
 
 let bookings = [];
 let doulas = [];
@@ -795,6 +604,8 @@ async function apiPut(path, body){
   return res.json();
 }
 
+/* --- UI Logic --- */
+
 function switchTab(tabName, e) {
   document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
   document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
@@ -804,6 +615,29 @@ function switchTab(tabName, e) {
   if (tabName === 'summary') {
     renderSummary();
   }
+}
+
+function toggleRow(row) {
+    // Only toggle on mobile devices
+    if (window.innerWidth <= 768) {
+        row.classList.toggle('expanded');
+    }
+}
+
+function filterTable(tableId, searchText) {
+    const table = document.getElementById(tableId);
+    const tr = table.getElementsByTagName("tr");
+    const filter = searchText.toLowerCase();
+
+    // Start at i=1 to skip the header row
+    for (let i = 1; i < tr.length; i++) {
+        let rowText = tr[i].textContent.toLowerCase();
+        if (rowText.includes(filter)) {
+            tr[i].style.display = "";
+        } else {
+            tr[i].style.display = "none";
+        }
+    }
 }
 
 function openModal(modalId) { 
@@ -845,7 +679,7 @@ function renderBookingServicesCheckboxes() {
 
 function addPaycheckServiceLine() {
   const container = document.getElementById('paycheckServicesContainer');
-  const lineId = Date.now();
+  
   const serviceOptions = services.map(s => 
     `<option value="${s.id}">${escapeHtml(s.serviceName)} (${Number(s.doulaPayout).toFixed(2)})</option>`
   ).join('');
@@ -864,10 +698,12 @@ function addPaycheckServiceLine() {
       <label>Quantity</label>
       <input type="number" class="paycheck-quantity" min="1" value="1" required>
     </div>
-    <button type="button" class="btn btn-small btn-remove-line" onclick="this.parentElement.remove()">Remove</button>
+    <button type="button" class="btn btn-small btn-remove-line" onclick="this.parentElement.remove()">X</button>
   `;
   container.appendChild(line);
 }
+
+/* --- Save Functions --- */
 
 async function saveBooking(e) {
   e.preventDefault();
@@ -1030,6 +866,8 @@ async function savePaycheck(e) {
   }
 }
 
+/* --- Edit & Delete Functions --- */
+
 function editBooking(id) {
   const booking = bookings.find(b => b.id === id);
   if (!booking) return;
@@ -1139,6 +977,8 @@ async function deleteItem(type, id) {
   }
 }
 
+/* --- Render Functions --- */
+
 function renderBookings() {
   const tbody = document.getElementById('bookingsTableBody');
   if (!bookings || bookings.length === 0) {
@@ -1148,17 +988,17 @@ function renderBookings() {
   tbody.innerHTML = bookings.map(b => {
     const servicesDisplay = b.services ? b.services.split(', ').map(s => `<div>${escapeHtml(s)}</div>`).join('') : '';
     return `
-    <tr>
-      <td>${escapeHtml(b.clientName)}</td>
-      <td>${escapeHtml(b.phone)}</td>
-      <td>${escapeHtml(b.email)}</td>
-      <td>${servicesDisplay}</td>
-      <td>${escapeHtml(b.assignedDoula || 'Unassigned')}</td>
-      <td>${escapeHtml(b.status)}</td>
-      <td>${escapeHtml(b.paid)}</td>
+    <tr onclick="toggleRow(this)">
+      <td data-label="Client Name">${escapeHtml(b.clientName)}</td>
+      <td data-label="Phone">${escapeHtml(b.phone)}</td>
+      <td data-label="Email">${escapeHtml(b.email)}</td>
+      <td data-label="Services">${servicesDisplay}</td>
+      <td data-label="Doula">${escapeHtml(b.assignedDoula || 'Unassigned')}</td>
+      <td data-label="Status">${escapeHtml(b.status)}</td>
+      <td data-label="Paid">${escapeHtml(b.paid)}</td>
       <td class="action-btns">
-        <button class="btn btn-small btn-edit" onclick="editBooking(${b.id})">Edit</button>
-        <button class="btn btn-small btn-danger" onclick="deleteItem('booking', ${b.id})">Delete</button>
+        <button class="btn btn-small btn-edit" onclick="event.stopPropagation(); editBooking(${b.id})">Edit</button>
+        <button class="btn btn-small btn-danger" onclick="event.stopPropagation(); deleteItem('booking', ${b.id})">Delete</button>
       </td>
     </tr>
   `}).join('');
@@ -1171,15 +1011,15 @@ function renderDoulas() {
     return;
   }
   tbody.innerHTML = doulas.map(d => `
-    <tr>
-      <td>${escapeHtml(d.name)}</td>
-      <td>${escapeHtml(d.phone)}</td>
-      <td>${escapeHtml(d.email)}</td>
-      <td>${escapeHtml(d.address)}</td>
-      <td>${escapeHtml(d.servicesOffered)}</td>
+    <tr onclick="toggleRow(this)">
+      <td data-label="Name">${escapeHtml(d.name)}</td>
+      <td data-label="Phone">${escapeHtml(d.phone)}</td>
+      <td data-label="Email">${escapeHtml(d.email)}</td>
+      <td data-label="Address">${escapeHtml(d.address)}</td>
+      <td data-label="Services Offered">${escapeHtml(d.servicesOffered)}</td>
       <td class="action-btns">
-        <button class="btn btn-small btn-edit" onclick="editDoula(${d.id})">Edit</button>
-        <button class="btn btn-small btn-danger" onclick="deleteItem('doula', ${d.id})">Delete</button>
+        <button class="btn btn-small btn-edit" onclick="event.stopPropagation(); editDoula(${d.id})">Edit</button>
+        <button class="btn btn-small btn-danger" onclick="event.stopPropagation(); deleteItem('doula', ${d.id})">Delete</button>
       </td>
     </tr>
   `).join('');
@@ -1192,14 +1032,14 @@ function renderServices() {
     return;
   }
   tbody.innerHTML = services.map(s => `
-    <tr>
-      <td>${escapeHtml(s.serviceName)}</td>
-      <td>${Number(s.clientPrice).toFixed(2)}</td>
-      <td>${Number(s.doulaPayout).toFixed(2)}</td>
-      <td>${Number(s.agencyProfit).toFixed(2)}</td>
+    <tr onclick="toggleRow(this)">
+      <td data-label="Service Name">${escapeHtml(s.serviceName)}</td>
+      <td data-label="Client Price">${Number(s.clientPrice).toFixed(2)}</td>
+      <td data-label="Doula Payout">${Number(s.doulaPayout).toFixed(2)}</td>
+      <td data-label="Agency Profit">${Number(s.agencyProfit).toFixed(2)}</td>
       <td class="action-btns">
-        <button class="btn btn-small btn-edit" onclick="editService(${s.id})">Edit</button>
-        <button class="btn btn-small btn-danger" onclick="deleteItem('service', ${s.id})">Delete</button>
+        <button class="btn btn-small btn-edit" onclick="event.stopPropagation(); editService(${s.id})">Edit</button>
+        <button class="btn btn-small btn-danger" onclick="event.stopPropagation(); deleteItem('service', ${s.id})">Delete</button>
       </td>
     </tr>
   `).join('');
@@ -1217,17 +1057,17 @@ function renderPaychecks() {
     ).join(', ');
     
     return `
-    <tr>
-      <td>${escapeHtml(p.doula)}</td>
-      <td>${escapeHtml(p.weekNumber)}</td>
-      <td>${escapeHtml(p.invoiceDate)}</td>
-      <td>${servicesDisplay || 'N/A'}</td>
-      <td>${Number(p.subtotal).toFixed(2)}</td>
-      <td>${Number(p.hst).toFixed(2)}</td>
-      <td>${Number(p.total).toFixed(2)}</td>
+    <tr onclick="toggleRow(this)">
+      <td data-label="Doula">${escapeHtml(p.doula)}</td>
+      <td data-label="Week">${escapeHtml(p.weekNumber)}</td>
+      <td data-label="Invoice Date">${escapeHtml(p.invoiceDate)}</td>
+      <td data-label="Services">${servicesDisplay || 'N/A'}</td>
+      <td data-label="Subtotal">${Number(p.subtotal).toFixed(2)}</td>
+      <td data-label="HST">${Number(p.hst).toFixed(2)}</td>
+      <td data-label="Total">${Number(p.total).toFixed(2)}</td>
       <td class="action-btns">
-        <button class="btn btn-small btn-edit" onclick="editPaycheck(${p.id})">Edit</button>
-        <button class="btn btn-small btn-danger" onclick="deleteItem('paycheck', ${p.id})">Delete</button>
+        <button class="btn btn-small btn-edit" onclick="event.stopPropagation(); editPaycheck(${p.id})">Edit</button>
+        <button class="btn btn-small btn-danger" onclick="event.stopPropagation(); deleteItem('paycheck', ${p.id})">Delete</button>
       </td>
     </tr>
   `}).join('');
@@ -1327,14 +1167,15 @@ function renderSummary() {
   });
   
   let html = '<div class="summary-section"><h3>Doula Earnings Summary</h3>';
+  html += '<table><thead><tr><th>Doula Name</th><th>YTD Earnings</th></tr></thead><tbody>';
   
   Object.keys(doulesSummary).forEach(doulaName => {
     const data = doulesSummary[doulaName];
-    html += `<tr style="font-weight: bold; background: #f8f5f2;"><td>YTD Total</td><td>${data.ytd.toFixed(2)}</td></tr>`;
-    html += '</tbody></table>';
+    html += `<tr><td>${escapeHtml(doulaName)}</td><td>${data.ytd.toFixed(2)}</td></tr>`;
   });
+  html += '</tbody></table></div>';
   
-  html += '</div><div class="summary-section"><h3>Service Usage Summary</h3>';
+  html += '<div class="summary-section"><h3>Service Usage Summary</h3>';
   
   Object.keys(serviceSummary).forEach(serviceName => {
     const data = serviceSummary[serviceName];
@@ -1374,6 +1215,8 @@ function escapeHtml(unsafe) {
     .replace(/'/g, "&#039;");
 }
 
+/* --- Initialization --- */
+
 window.addEventListener('load', async () => {
   try {
     const all = await apiGet('/api/all');
@@ -1403,7 +1246,7 @@ window.addEventListener('load', async () => {
       updateOwnerPayout();
     } catch (err2) {
       console.error('Fallback load failed', err2);
-      alert('Could not reach backend. Make sure your JSON server is running on port 4000.');
+      alert('Could not reach backend. Check console/network.');
     }
   }
 });
