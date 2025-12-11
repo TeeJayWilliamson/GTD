@@ -159,7 +159,7 @@
         .btn:hover { background: #6d5942; }
         
         .btn-secondary { background: var(--gray-light); color: var(--primary); }
-        .btn-small { padding: 6px 12px; font-size: 0.8em; margin-right: 5px; border-radius: 4px; }
+        .btn-small { padding: 6px 12px; font-size: 0.8em; margin-right: 5px; border-radius: 4px; }        
         .btn-edit { background: var(--secondary); color: white; }
         .btn-danger { background: var(--danger); color: white; }
         .btn-add-line { background: var(--secondary); margin-top: 10px; width: 100%; }
@@ -245,6 +245,52 @@
             width: 100%;
             margin-top: 15px;
         }
+
+.action-btns {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-start;
+  flex-wrap: nowrap;
+  align-items: center;
+  width: fit-content;
+  max-width: 200px;
+}
+
+/* Ensure the actions column doesn't stretch */
+#paychecksTable td.action-btns {
+  width: auto;
+  min-width: 180px;
+  padding: 15px;
+}
+
+/* Ensure all table cells have consistent padding and borders */
+#paychecksTable td {
+  padding: 15px;
+  border-bottom: 1px solid #e0e0e0;
+  vertical-align: middle;
+}
+
+#paychecksTable tr {
+  border-bottom: 1px solid #e0e0e0;
+}
+
+/* Remove double borders */
+#paychecksTable tr:last-child td {
+  border-bottom: none;
+}
+
+.action-btns .btn {
+  margin: 0;
+  white-space: nowrap;
+}
+
+.modal-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+  margin-top: 30px;
+  flex-wrap: wrap;
+}
         
         /* Mobile Responsive */
         @media (max-width: 768px) {
@@ -346,7 +392,7 @@
                             <th>Invoice Date</th>
                             <th style="width: 35%;">Services Breakdown</th>
                             <th>Total</th>
-                            <th>Actions</th>
+                            <th style="width: 180px;">ACTIONS</th>
                         </tr>
                     </thead>
                     <tbody id="paychecksTableBody"></tbody>
@@ -540,12 +586,13 @@
         </div>
     </div>
 
-    <div id="loginModal" class="modal active">
-        <div class="login-form-container">
-            <div class="modal-header">
-                <h2>System Login</h2>
-                </div>
-            <form id="loginForm" onsubmit="handleLogin(event)">
+<div id="loginModal" class="modal active">
+    <div class="login-form-container">
+        <div class="modal-header" style="flex-direction: column; align-items: center; padding-bottom: 5px;">
+            <h2>Greater Toronto Doulas</h2>
+            <h4 style="font-weight: 300; color: #888; font-size: 1em; margin-top: -10px; margin-bottom: 15px;">Doula Management System</h4>
+            </div>
+        <form id="loginForm" onsubmit="handleLogin(event)">
                 <div class="form-group">
                     <label for="username">Username</label>
                     <input type="text" id="username" name="username" required>
@@ -850,6 +897,8 @@ function updatePaycheckWeekFilter() {
     }
 }
 
+// ... (inside the <script> block)
+
 function renderPaychecks() {
   const tbody = document.getElementById('paychecksTableBody');
   const filterWeek = document.getElementById('paycheckWeekFilter').value;
@@ -885,12 +934,13 @@ function renderPaychecks() {
       </td>
       <td data-label="Total" style="font-weight:bold;">$${Number(p.total).toFixed(2)}</td>
       <td class="action-btns">
-        <button class="btn btn-small btn-edit" onclick="editPaycheck(${p.id})">Edit</button>
+        <button class="btn btn-small btn-edit" onclick="editPaycheck(${p.id})">Edit</button> 
         <button class="btn btn-small btn-danger" onclick="deleteItem('paycheck', ${p.id})">Delete</button>
       </td>
     </tr>
   `}).join('');
 }
+// ...
 
 
 // --- SUMMARY REPORTS (Redesigned) ---
