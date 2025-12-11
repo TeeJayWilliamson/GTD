@@ -193,6 +193,59 @@
         label { margin-bottom: 5px; font-size: 0.9em; color: #666; }
         input, select, textarea { padding: 12px; border: 1px solid var(--gray-light); border-radius: 6px; font-size: 1em; background: #fafafa; width: 100%; }
         
+#bookingServicesContainer label {
+    display: flex;
+    align-items: center; /* vertically center */
+    gap: 8px;
+    margin-bottom: 0;
+}
+
+/* Nudge the text slightly up */
+#bookingServicesContainer label span {
+    display: inline-block;
+    transform: translateY(-1px); /* adjust as needed, -1px or -2px */
+}
+
+/* Make sure checkbox itself is consistent size */
+#bookingServicesContainer input[type="checkbox"],
+#bookingServicesContainer input[type="radio"] {
+    width: 18px;
+    height: 18px;
+    margin: 0;
+    flex-shrink: 0;
+}
+
+
+
+        /* Login Form Styles - Ensure this modal is always active on load until login */
+        .login-form-container {
+            padding: 30px;
+            background: var(--white);
+            border-radius: 12px;
+            width: 90%;
+            max-width: 400px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+        .login-form-container h2 {
+            color: var(--primary);
+            margin-bottom: 25px;
+        }
+        .login-form-container .form-group {
+            margin-bottom: 20px;
+        }
+        .login-form-container input[type="text"], 
+        .login-form-container input[type="password"] {
+            padding: 12px;
+            border: 1px solid var(--gray-light);
+            border-radius: 6px;
+            width: 100%;
+        }
+        .login-form-container .btn {
+            width: 100%;
+            margin-top: 15px;
+        }
+        
         /* Mobile Responsive */
         @media (max-width: 768px) {
             .controls-bar { flex-direction: column-reverse; align-items: stretch; }
@@ -212,115 +265,118 @@
     </style>
 </head>
 <body>
-    <div class="container">
-        <header>
-            <h1>Greater Toronto Doulas</h1>
-            <p class="tagline">Management System</p>
-        </header>
 
-        <div class="nav-tabs">
-            <button class="tab-btn active" onclick="switchTab('bookings', event)">Bookings</button>
-            <button class="tab-btn" onclick="switchTab('doulas', event)">Doulas</button>
-            <button class="tab-btn" onclick="switchTab('services', event)">Services</button>
-            <button class="tab-btn" onclick="switchTab('paychecks', event)">Paychecks</button>
-            <button class="tab-btn" onclick="switchTab('summary', event)">Reports</button>
-        </div>
+    <div id="mainAppContainer" style="display: none;">
+        <div class="container">
+            <header style="position: relative;">
+                <h1>Greater Toronto Doulas</h1>
+                <p class="tagline">Management System</p>
+                <button class="btn btn-secondary btn-small" style="position: absolute; top: 10px; right: 20px;" onclick="handleLogout()">Logout</button>
+            </header>
 
-        <div id="bookings" class="tab-content active">
-            <div class="controls-bar">
-                <h2>Client Bookings</h2>
-                <button class="btn" onclick="openModal('bookingModal')">+ New Booking</button>
+            <div class="nav-tabs">
+                <button class="tab-btn active" onclick="switchTab('bookings', event)">Bookings</button>
+                <button class="tab-btn" onclick="switchTab('doulas', event)">Doulas</button>
+                <button class="tab-btn" onclick="switchTab('services', event)">Services</button>
+                <button class="tab-btn" onclick="switchTab('paychecks', event)">Paychecks</button>
+                <button class="tab-btn" onclick="switchTab('summary', event)">Reports</button>
             </div>
-            <div class="search-bar-wrapper" style="margin-bottom: 20px;">
-                <input type="text" class="search-input" placeholder="Search clients..." onkeyup="filterList('bookingsList', this.value)">
-            </div>
-            <div id="bookingsList" class="list-container">
+
+            <div id="bookings" class="tab-content active">
+                <div class="controls-bar">
+                    <h2>Client Bookings</h2>
+                    <button class="btn" onclick="newBooking()">+ New Booking</button>
                 </div>
-        </div>
-
-        <div id="doulas" class="tab-content">
-            <div class="controls-bar">
-                <h2>Doula Directory</h2>
-                <button class="btn" onclick="openModal('doulaModal')">+ Add Doula</button>
-            </div>
-            <div class="search-bar-wrapper" style="margin-bottom: 20px;">
-                <input type="text" class="search-input" placeholder="Search doulas..." onkeyup="filterList('doulasList', this.value)">
-            </div>
-            <div id="doulasList" class="list-container">
-                 </div>
-        </div>
-
-        <div id="services" class="tab-content">
-            <div class="controls-bar">
-                <h2>Services & Pricing</h2>
-                <button class="btn" onclick="openModal('serviceModal')">+ Add Service</button>
-            </div>
-            <table id="servicesTable">
-                <thead>
-                    <tr>
-                        <th>Service Name</th>
-                        <th>Client Price</th>
-                        <th>Doula Payout</th>
-                        <th>Agency Profit</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody id="servicesTableBody"></tbody>
-            </table>
-        </div>
-
-        <div id="paychecks" class="tab-content">
-            <div class="controls-bar">
-                <h2>Paychecks</h2>
-                <button class="btn" onclick="openModal('paycheckModal')">+ Generate</button>
-            </div>
-            
-            <div style="background: white; padding: 15px; border-radius: 8px; border: 1px solid #eee; margin-bottom: 20px; display: flex; gap: 10px; align-items: center;">
-                <label style="margin:0;">Filter by Week:</label>
-                <select id="paycheckWeekFilter" class="filter-select" onchange="renderPaychecks()">
-                    <option value="all">Show All Weeks</option>
-                    </select>
+                <div class="search-bar-wrapper" style="margin-bottom: 20px;">
+                    <input type="text" class="search-input" placeholder="Search clients..." onkeyup="filterList('bookingsList', this.value)">
+                </div>
+                <div id="bookingsList" class="list-container">
+                    </div>
             </div>
 
-            <table id="paychecksTable">
-                <thead>
-                    <tr>
-                        <th>Week</th>
-                        <th>Doula</th>
-                        <th>Invoice Date</th>
-                        <th style="width: 35%;">Services Breakdown</th>
-                        <th>Total</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody id="paychecksTableBody"></tbody>
-            </table>
-        </div>
+            <div id="doulas" class="tab-content">
+                <div class="controls-bar">
+                    <h2>Doula Directory</h2>
+                    <button class="btn" onclick="newDoula()">+ Add Doula</button>
+                </div>
+                <div class="search-bar-wrapper" style="margin-bottom: 20px;">
+                    <input type="text" class="search-input" placeholder="Search doulas..." onkeyup="filterList('doulasList', this.value)">
+                </div>
+                <div id="doulasList" class="list-container">
+                    </div>
+            </div>
 
-        <div id="summary" class="tab-content">
-            <h2>Summary Reports</h2>
-            
-            <div class="controls-bar" style="background: white; padding: 15px; border-radius: 8px; border: 1px solid #eee;">
-                <div style="display:flex; gap: 15px; align-items: center; width: 100%;">
-                    <div>
-                        <label>Report Type:</label>
-                        <select id="summaryType" class="filter-select" onchange="renderSummary()">
-                            <option value="ytd">Year to Date Overview</option>
-                            <option value="weekly">Weekly Drilldown</option>
+            <div id="services" class="tab-content">
+                <div class="controls-bar">
+                    <h2>Services & Pricing</h2>
+                    <button class="btn" onclick="newService()">+ Add Service</button>
+                </div>
+                <table id="servicesTable">
+                    <thead>
+                        <tr>
+                            <th>Service Name</th>
+                            <th>Client Price</th>
+                            <th>Doula Payout</th>
+                            <th>Agency Profit</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="servicesTableBody"></tbody>
+                </table>
+            </div>
+
+            <div id="paychecks" class="tab-content">
+                <div class="controls-bar">
+                    <h2>Paychecks</h2>
+                    <button class="btn" onclick="newPaycheck()">+ Generate</button>
+                </div>
+                
+                <div style="background: white; padding: 15px; border-radius: 8px; border: 1px solid #eee; margin-bottom: 20px; display: flex; gap: 10px; align-items: center;">
+                    <label style="margin:0;">Filter by Week:</label>
+                    <select id="paycheckWeekFilter" class="filter-select" onchange="renderPaychecks()">
+                        <option value="all">Show All Weeks</option>
                         </select>
-                    </div>
-                    <div id="summaryWeekSelectWrapper" style="display:none;">
-                        <label>Select Week:</label>
-                        <select id="summaryWeekSelect" class="filter-select" onchange="renderSummary()">
-                            </select>
-                    </div>
                 </div>
+
+                <table id="paychecksTable">
+                    <thead>
+                        <tr>
+                            <th>Week</th>
+                            <th>Doula</th>
+                            <th>Invoice Date</th>
+                            <th style="width: 35%;">Services Breakdown</th>
+                            <th>Total</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="paychecksTableBody"></tbody>
+                </table>
             </div>
 
-            <div id="summaryContent"></div>
+            <div id="summary" class="tab-content">
+                <h2>Summary Reports</h2>
+                
+                <div class="controls-bar" style="background: white; padding: 15px; border-radius: 8px; border: 1px solid #eee;">
+                    <div style="display:flex; gap: 15px; align-items: center; width: 100%;">
+                        <div>
+                            <label>Report Type:</label>
+                            <select id="summaryType" class="filter-select" onchange="renderSummary()">
+                                <option value="ytd">Year to Date Overview</option>
+                                <option value="weekly">Weekly Report</option>
+                            </select>
+                        </div>
+                        <div id="summaryWeekSelectWrapper" style="display:none;">
+                            <label>Select Week:</label>
+                            <select id="summaryWeekSelect" class="filter-select" onchange="renderSummary()">
+                                </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="summaryContent"></div>
+            </div>
         </div>
     </div>
-
     <div id="detailsModal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
@@ -381,8 +437,7 @@
                     </div>
                     <div class="form-group" style="grid-column: 1 / -1;">
                         <label>Services *</label>
-                        <div class="multi-select-wrapper" id="bookingServicesContainer" style="border:1px solid #ddd; padding:10px; max-height:100px; overflow-y:auto;"></div>
-                    </div>
+<div class="multi-select-wrapper" id="bookingServicesContainer" style="border:1px solid #ddd; padding:15px 5px 5px 5px; max-height:100px; overflow-y:auto;"></div>                    </div>
                 </div>
                 <button type="submit" class="btn">Save Booking</button>
             </form>
@@ -485,8 +540,30 @@
         </div>
     </div>
 
-<script>
+    <div id="loginModal" class="modal active">
+        <div class="login-form-container">
+            <div class="modal-header">
+                <h2>System Login</h2>
+                </div>
+            <form id="loginForm" onsubmit="handleLogin(event)">
+                <div class="form-group">
+                    <label for="username">Username</label>
+                    <input type="text" id="username" name="username" required>
+                </div>
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" name="password" required>
+                </div>
+                <button type="submit" class="btn">Sign In</button>
+                <p id="loginMessage" style="color: var(--danger); margin-top: 10px;"></p>
+            </form>
+        </div>
+    </div>
+    <script>
 const API_BASE = 'https://gtd-1rkv.onrender.com'; // Change to '' if hosted on same server
+const AUTH_KEY = 'gtd_admin_logged_in';
+const STATIC_USERNAME = 'GTDAdmin';
+const STATIC_PASSWORD = 'Doula@123'; // NOTE: This is client-side and not secure.
 
 let bookings = [];
 let doulas = [];
@@ -502,7 +579,7 @@ function formatPhone(str) {
     if (match) {
         return '(' + match[1] + ') ' + match[2] + '-' + match[3];
     }
-    return str; // return original if it doesn't match standard length
+    return str;
 }
 
 function escapeHtml(unsafe) {
@@ -569,21 +646,36 @@ function filterList(containerId, searchText) {
     }
 }
 
+// Wrapper functions for new items
+function newBooking() { editingId = null; openModal('bookingModal'); }
+function newDoula() { editingId = null; openModal('doulaModal'); }
+function newService() { editingId = null; openModal('serviceModal'); }
+function newPaycheck() { editingId = null; openModal('paycheckModal'); }
+
+// MODIFIED: Logic updated to only reset form if not editing, and set title dynamically
 function openModal(modalId) { 
-  editingId = null;
   document.getElementById(modalId).classList.add('active');
   
-  // Clear forms
-  const form = document.querySelector(`#${modalId} form`);
-  if(form) form.reset();
+  // Clear forms ONLY if we are NOT in an edit flow (editingId is null)
+  if (editingId === null) {
+      const form = document.querySelector(`#${modalId} form`);
+      if(form) form.reset();
+  }
 
   if (modalId === 'bookingModal') {
-    document.getElementById('bookingModalTitle').textContent = 'New Booking';
+    document.getElementById('bookingModalTitle').textContent = editingId ? 'Edit Booking' : 'New Booking';
     renderBookingServicesCheckboxes();
+  } else if (modalId === 'doulaModal') {
+    document.getElementById('doulaModalTitle').textContent = editingId ? 'Edit Doula' : 'Add Doula';
+  } else if (modalId === 'serviceModal') {
+    document.getElementById('serviceModalTitle').textContent = editingId ? 'Edit Service' : 'Add Service';
   } else if (modalId === 'paycheckModal') {
-    document.getElementById('paycheckModalTitle').textContent = 'Generate Paycheck';
-    document.getElementById('paycheckServicesContainer').innerHTML = '';
-    addPaycheckServiceLine();
+    document.getElementById('paycheckModalTitle').textContent = editingId ? 'Edit Paycheck' : 'Generate Paycheck';
+    // Only clear and add line for *new* paycheck
+    if(editingId === null) {
+        document.getElementById('paycheckServicesContainer').innerHTML = '';
+        addPaycheckServiceLine();
+    }
   }
 }
 
@@ -591,6 +683,44 @@ function closeModal(modalId) {
   document.getElementById(modalId).classList.remove('active'); 
   editingId = null;
 }
+
+// NEW: Function to show the main app
+function showMainApp() {
+    document.getElementById('loginModal').classList.remove('active');
+    document.getElementById('mainAppContainer').style.display = 'block';
+    initApp(); // Load data once logged in
+}
+
+// NEW: Function to handle Logout
+function handleLogout() {
+    localStorage.removeItem(AUTH_KEY);
+    document.getElementById('mainAppContainer').style.display = 'none';
+    document.getElementById('loginModal').classList.add('active');
+    document.getElementById('loginMessage').textContent = 'Logged out successfully.';
+    document.getElementById('loginMessage').style.color = 'var(--success)';
+}
+
+// NEW: Static client-side login implementation
+function handleLogin(e) {
+    e.preventDefault();
+    const username = e.target.username.value;
+    const password = e.target.password.value;
+    const msgElement = document.getElementById('loginMessage');
+    
+    // --- STATIC LOGIN CHECK ---
+    if (username === STATIC_USERNAME && password === STATIC_PASSWORD) {
+        msgElement.textContent = 'Login successful! Access granted.';
+        msgElement.style.color = 'var(--success)';
+        localStorage.setItem(AUTH_KEY, 'true'); // Simulate session
+        setTimeout(() => {
+            showMainApp();
+        }, 500);
+    } else {
+        msgElement.textContent = 'Invalid username or password.';
+        msgElement.style.color = 'var(--danger)';
+    }
+}
+
 
 // --- BOOKINGS (Card View + Details Modal) ---
 
@@ -895,7 +1025,7 @@ async function saveBooking(e) {
   
   const booking = {
     clientName: formData.get('clientName'),
-    dueDate: formData.get('dueDate'), // Added field
+    dueDate: formData.get('dueDate'),
     phone: formData.get('phone'),
     email: formData.get('email'),
     services: selectedServices.join(', '),
@@ -1026,25 +1156,26 @@ async function savePaycheck(e) {
   closeModal('paycheckModal');
 }
 
+// MODIFIED: Logic simplified, relies on openModal to set title
 function editBooking(id) {
   closeModal('detailsModal'); // Close details if open
   const booking = bookings.find(b => b.id === id);
   if (!booking) return;
-  editingId = id;
+  editingId = id; // Crucial: set editingId before opening the modal
   
-  document.getElementById('bookingModalTitle').textContent = 'Edit Booking';
   const form = document.getElementById('bookingForm');
   form.elements.clientName.value = booking.clientName || '';
-  form.elements.dueDate.value = booking.dueDate || ''; // New field
+  form.elements.dueDate.value = booking.dueDate || ''; 
   form.elements.phone.value = booking.phone || '';
   form.elements.email.value = booking.email || '';
   form.elements.assignedDoula.value = booking.assignedDoula || '';
   form.elements.status.value = booking.status || '';
   form.elements.paid.value = booking.paid || '';
   
-  renderBookingServicesCheckboxes();
+  // Call openModal *after* setting the form values (this runs renderBookingServicesCheckboxes)
+  openModal('bookingModal');
   
-  // Check checkboxes
+  // Check checkboxes (must be done after renderBookingServicesCheckboxes inside openModal)
   const serviceNames = (booking.services || '').split(', ').map(s => s.trim());
   serviceNames.forEach(name => {
     const service = services.find(s => s.serviceName === name);
@@ -1053,16 +1184,15 @@ function editBooking(id) {
       if (checkbox) checkbox.checked = true;
     }
   });
-  
-  openModal('bookingModal');
 }
 
+// MODIFIED: Logic simplified, relies on openModal to set title
 function editDoula(id) {
   closeModal('detailsModal');
   const doula = doulas.find(d => d.id === id);
   if (!doula) return;
   editingId = id;
-  document.getElementById('doulaModalTitle').textContent = 'Edit Doula';
+  
   const form = document.getElementById('doulaForm');
   form.elements.name.value = doula.name || '';
   form.elements.phone.value = doula.phone || '';
@@ -1072,11 +1202,12 @@ function editDoula(id) {
   openModal('doulaModal');
 }
 
+// MODIFIED: Logic simplified, relies on openModal to set title
 function editService(id) {
   const service = services.find(s => s.id === id);
   if (!service) return;
   editingId = id;
-  document.getElementById('serviceModalTitle').textContent = 'Edit Service';
+  
   const form = document.getElementById('serviceForm');
   form.elements.serviceName.value = service.serviceName || '';
   form.elements.clientPrice.value = service.clientPrice || '';
@@ -1084,11 +1215,12 @@ function editService(id) {
   openModal('serviceModal');
 }
 
+// MODIFIED: Logic simplified, relies on openModal to set title
 function editPaycheck(id) {
   const paycheck = paychecks.find(p => p.id === id);
   if (!paycheck) return;
   editingId = id;
-  document.getElementById('paycheckModalTitle').textContent = 'Edit Paycheck';
+  
   const form = document.getElementById('paycheckForm');
   form.elements.doula.value = paycheck.doula || '';
   form.elements.weekNumber.value = paycheck.weekNumber || '';
@@ -1138,13 +1270,17 @@ async function deleteItem(type, id) {
 // --- HELPERS FOR FORMS ---
 function renderBookingServicesCheckboxes() {
   const container = document.getElementById('bookingServicesContainer');
+  
   container.innerHTML = services.map(s => `
-    <div class="multi-select-item">
-      <input type="checkbox" id="service_${s.id}" value="${s.id}">
-      <label for="service_${s.id}">${escapeHtml(s.serviceName)}</label>
+    <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 5px;">
+      <input type="checkbox" id="service_${s.id}" value="${s.id}" style="width: 18px; height: 18px; margin: 0; flex-shrink: 0;">
+      <label for="service_${s.id}" style="cursor: pointer; color: var(--text); margin: 0;">
+        ${escapeHtml(s.serviceName)}
+      </label>
     </div>
   `).join('');
 }
+
 
 function addPaycheckServiceLine() {
   const container = document.getElementById('paycheckServicesContainer');
@@ -1154,6 +1290,9 @@ function addPaycheckServiceLine() {
   
   const line = document.createElement('div');
   line.className = 'service-line-item';
+  line.style.display = 'flex';
+  line.style.gap = '10px';
+  line.style.marginBottom = '10px';
   line.innerHTML = `
     <div class="form-group" style="margin: 0; flex:2;">
       <select class="paycheck-service" required style="width:100%;">
@@ -1180,8 +1319,8 @@ function updateDoulaDropdowns() {
   });
 }
 
-// --- INIT ---
-window.addEventListener('load', async () => {
+// --- INIT APP FUNCTION ---
+async function initApp() {
   try {
     const all = await apiGet('/api/all');
     bookings = all.bookings || [];
@@ -1199,6 +1338,19 @@ window.addEventListener('load', async () => {
     console.error('Load failed', err);
     alert('Could not load data. Check server.');
   }
+}
+
+// --- INITIAL PAGE LOAD CHECK ---
+window.addEventListener('load', () => {
+    if (localStorage.getItem(AUTH_KEY) === 'true') {
+        // If auth key exists, show the main app immediately
+        showMainApp();
+    } else {
+        // Otherwise, the login modal is active by default in HTML
+        // Ensure the main container is hidden
+        document.getElementById('mainAppContainer').style.display = 'none';
+        document.getElementById('loginModal').classList.add('active');
+    }
 });
 </script>
 </body>
