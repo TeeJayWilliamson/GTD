@@ -299,21 +299,65 @@
             thead tr { position: absolute; top: -9999px; left: -9999px; }
             tr { margin-bottom: 15px; border: 1px solid var(--gray-light); border-radius: 8px; padding: 10px; }
             td { border: none; padding: 8px 5px; display: flex; justify-content: space-between; text-align: right; }
-            td::before { content: attr(data-label); font-weight: bold; color: #999; margin-right: 10px; text-align: left; }
-            td:first-child { border-bottom: 1px solid #eee; margin-bottom: 10px; color: var(--primary); font-weight: bold; display: block; text-align: left;}
+            td::before { content: attr(data-label) ":"; font-weight: bold; text-transform: uppercase; margin-right: 10px; color: #777; flex-shrink: 0; }
+            td:first-child, td:last-child { border-radius: 0; }
+            .action-btns { justify-content: flex-end; width: 100%; }
+        }
+        @media (max-width: 500px) {
+             .form-grid { grid-template-columns: 1fr; }
         }
 
-        /* Summary Stats */
-        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-bottom: 30px; }
-        .stat-card { background: var(--white); border: 1px solid var(--gray-light); padding: 25px; text-align: center; border-radius: 8px; }
-        .stat-label { font-size: 0.85em; color: #999; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 1px; }
-        .stat-value { font-size: 2em; font-weight: 300; color: var(--primary); }
+        /* Summary Report Styles */
+        .stat-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        .stat-card {
+            background: var(--white);
+            border: 1px solid var(--gray-light);
+            padding: 25px;
+            text-align: center;
+            border-radius: 8px;
+        }
+        .stat-label {
+            font-size: 0.85em;
+            color: #999;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .stat-value {
+            font-size: 2em;
+            font-weight: 300;
+            color: var(--primary);
+        }
     </style>
 </head>
 <body>
 
+    <div id="loginModal" class="modal active">
+        <div class="login-form-container">
+            <h2>GTD Management Login</h2>
+            <form id="loginForm">
+                <div class="form-group">
+                    <label for="username">Username</label>
+                    <input type="text" id="username" name="username" required>
+                </div>
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" name="password" required>
+                </div>
+                <button type="submit" class="btn">Sign In</button>
+                <p id="loginMessage" style="color: var(--danger); margin-top: 10px;"></p>
+            </form>
+        </div>
+    </div>
+    
     <div id="mainAppContainer" style="display: none;">
         <div class="container">
+
             <header style="position: relative;">
                 <h1>Greater Toronto Doulas</h1>
                 <p class="tagline">Management System</p>
@@ -328,36 +372,30 @@
                 <button class="tab-btn" onclick="switchTab('summary', event)">Reports</button>
             </div>
 
-            <div id="bookings" class="tab-content active">
+            <div id="bookingsTab" class="tab-content active">
                 <div class="controls-bar">
-                    <h2>Client Bookings</h2>
-                    <button class="btn" onclick="newBooking()">+ New Booking</button>
-                </div>
-                <div class="search-bar-wrapper" style="margin-bottom: 20px;">
-                    <input type="text" class="search-input" placeholder="Search clients..." onkeyup="filterList('bookingsList', this.value)">
+                    <button class="btn" onclick="newBooking()">+ Log New Booking</button>
+                    <input type="text" id="bookingSearch" class="search-input" placeholder="Search Bookings by Client/Doula..." onkeyup="renderBookings()">
                 </div>
                 <div id="bookingsList" class="list-container">
                     </div>
             </div>
 
-            <div id="doulas" class="tab-content">
+            <div id="doulasTab" class="tab-content">
                 <div class="controls-bar">
-                    <h2>Doula Directory</h2>
-                    <button class="btn" onclick="newDoula()">+ Add Doula</button>
-                </div>
-                <div class="search-bar-wrapper" style="margin-bottom: 20px;">
-                    <input type="text" class="search-input" placeholder="Search doulas..." onkeyup="filterList('doulasList', this.value)">
+                    <button class="btn" onclick="newDoula()">+ Add New Doula</button>
+                    <input type="text" id="doulaSearch" class="search-input" placeholder="Search Doulas by Name/Service..." onkeyup="renderDoulas()">
                 </div>
                 <div id="doulasList" class="list-container">
                     </div>
             </div>
-
-            <div id="services" class="tab-content">
+            
+            <div id="servicesTab" class="tab-content">
                 <div class="controls-bar">
-                    <h2>Services & Pricing</h2>
-                    <button class="btn" onclick="newService()">+ Add Service</button>
+                    <button class="btn" onclick="newService()">+ Add New Service</button>
+                    <input type="text" id="serviceSearch" class="search-input" placeholder="Search Services..." onkeyup="renderServices()">
                 </div>
-                <table id="servicesTable">
+                <table>
                     <thead>
                         <tr>
                             <th>Service Name</th>
@@ -367,75 +405,50 @@
                             <th>Actions</th>
                         </tr>
                     </thead>
-                    <tbody id="servicesTableBody"></tbody>
+                    <tbody id="servicesTableBody">
+                        </tbody>
                 </table>
             </div>
 
-            <div id="paychecks" class="tab-content">
+            <div id="paychecksTab" class="tab-content">
                 <div class="controls-bar">
-                    <h2>Paychecks</h2>
-                    <button class="btn" onclick="newPaycheck()">+ Generate</button>
-                </div>
-                
-                <div style="background: white; padding: 15px; border-radius: 8px; border: 1px solid #eee; margin-bottom: 20px; display: flex; gap: 10px; align-items: center;">
-                    <label style="margin:0;">Filter by Week:</label>
+                    <button class="btn" onclick="newPaycheck()">+ Generate Paycheck</button>
                     <select id="paycheckWeekFilter" class="filter-select" onchange="renderPaychecks()">
-                        <option value="all">Show All Weeks</option>
-                        </select>
+                        <option value="">All Weeks</option>
+                    </select>
+                    <select id="paycheckDoulaFilter" class="filter-select" onchange="renderPaychecks()">
+                        <option value="">All Doulas</option>
+                    </select>
                 </div>
-
                 <table id="paychecksTable">
                     <thead>
                         <tr>
                             <th>Week</th>
                             <th>Doula</th>
-                            <th>Invoice Date</th>
-                            <th style="width: 35%;">Services Breakdown</th>
-                            <th>Total</th>
-                            <th style="width: 180px;">ACTIONS</th>
+                            <th>Date</th>
+                            <th>Services</th>
+                            <th>Total Payout</th>
+                            <th>Actions</th>
                         </tr>
                     </thead>
-                    <tbody id="paychecksTableBody"></tbody>
+                    <tbody id="paychecksTableBody">
+                        </tbody>
                 </table>
             </div>
 
-            <div id="summary" class="tab-content">
-                <h2>Summary Reports</h2>
-                
-                <div class="controls-bar" style="background: white; padding: 15px; border-radius: 8px; border: 1px solid #eee;">
-                    <div style="display:flex; gap: 15px; align-items: center; width: 100%;">
-                        <div>
-                            <label>Report Type:</label>
-                            <select id="summaryType" class="filter-select" onchange="renderSummary()">
-                                <option value="ytd">Year to Date Overview</option>
-                                <option value="weekly">Weekly Report</option>
-                            </select>
-                        </div>
-                        <div id="summaryWeekSelectWrapper" style="display:none;">
-                            <label>Select Week:</label>
-                            <select id="summaryWeekSelect" class="filter-select" onchange="renderSummary()">
-                                </select>
-                        </div>
+            <div id="summaryTab" class="tab-content">
+                <h2>Summary Report</h2>
+                <div id="summaryStats" class="stat-grid">
                     </div>
+                <h2>Services Performed This Week</h2>
+                <div class="controls-bar">
+                    <input type="week" id="reportWeek" class="filter-select" onchange="renderSummary()">
                 </div>
-
-                <div id="summaryContent"></div>
+                <div id="servicesReportContainer">
+                    </div>
             </div>
-        </div>
-    </div>
-    <div id="detailsModal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2 id="detailsTitle">Details</h2>
-                <button class="close-btn" onclick="closeModal('detailsModal')">&times;</button>
-            </div>
-            <div id="detailsBody"></div>
-            <div id="detailsActions" class="detail-actions">
-                </div>
-        </div>
-    </div>
 
-    <div id="bookingModal" class="modal">
+        </div> </div> <div id="bookingModal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
                 <h2 id="bookingModalTitle">New Booking</h2>
@@ -483,9 +496,14 @@
                     </div>
                     <div class="form-group" style="grid-column: 1 / -1;">
                         <label>Services *</label>
-<div class="multi-select-wrapper" id="bookingServicesContainer" style="border:1px solid #ddd; padding:15px 5px 5px 5px; max-height:100px; overflow-y:auto;"></div>                    </div>
+                        <div class="multi-select-checkbox-group" id="bookingServicesContainer">
+                            </div>
+                    </div>
                 </div>
-                <button type="submit" class="btn">Save Booking</button>
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal('bookingModal')">Cancel</button>
+                    <button type="submit" class="btn">Save Booking</button>
+                </div>
             </form>
         </div>
     </div>
@@ -516,15 +534,18 @@
                         <input type="text" name="address">
                     </div>
                     <div class="form-group" style="grid-column: 1 / -1;">
-                        <label>Services Offered</label>
-                        <textarea name="servicesOffered" rows="3"></textarea>
+                        <label>Services Offered (Comma Separated)</label>
+                        <textarea name="servicesOffered"></textarea>
                     </div>
                 </div>
-                <button type="submit" class="btn">Save Doula</button>
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal('doulaModal')">Cancel</button>
+                    <button type="submit" class="btn">Save Doula</button>
+                </div>
             </form>
         </div>
     </div>
-
+    
     <div id="serviceModal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
@@ -539,19 +560,26 @@
                         <input type="text" name="serviceName" required>
                     </div>
                     <div class="form-group">
-                        <label>Client Price *</label>
-                        <input type="number" name="clientPrice" step="0.01" required>
+                        <label>Client Price * ($)</label>
+                        <input type="number" name="clientPrice" min="0" step="0.01" required>
                     </div>
                     <div class="form-group">
-                        <label>Doula Payout *</label>
-                        <input type="number" name="doulaPayout" step="0.01" required>
+                        <label>Doula Payout * ($)</label>
+                        <input type="number" name="doulaPayout" min="0" step="0.01" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Agency Profit * ($)</label>
+                        <input type="number" name="agencyProfit" min="0" step="0.01" required>
                     </div>
                 </div>
-                <button type="submit" class="btn">Save Service</button>
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal('serviceModal')">Cancel</button>
+                    <button type="submit" class="btn">Save Service</button>
+                </div>
             </form>
         </div>
     </div>
-
+    
     <div id="paycheckModal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
@@ -560,7 +588,7 @@
             </div>
             <form id="paycheckForm" onsubmit="savePaycheck(event)">
                 <input type="hidden" name="id">
-                <div class="form-grid">
+                <div class="form-grid" style="grid-template-columns: 1fr 1fr 1fr;">
                     <div class="form-group">
                         <label>Doula *</label>
                         <select name="doula" id="paycheckDoula" required>
@@ -569,839 +597,943 @@
                     </div>
                     <div class="form-group">
                         <label>Week Number *</label>
-                        <input type="number" name="weekNumber" required>
+                        <input type="number" name="weekNumber" min="1" required>
                     </div>
                     <div class="form-group">
                         <label>Invoice Date *</label>
                         <input type="date" name="invoiceDate" required>
                     </div>
                 </div>
-                <div class="form-group">
-                    <label>Services</label>
-                    <div id="paycheckServicesContainer"></div>
-                    <button type="button" class="btn btn-add-line" onclick="addPaycheckServiceLine()">+ Add Service</button>
+                
+                <hr style="margin: 20px 0; border: none; border-top: 1px dashed var(--gray-light);">
+                <h3>Services Breakdown</h3>
+                
+                <div id="paycheckServicesContainer">
+                    </div>
+                
+                <button type="button" class="btn btn-add-line" onclick="addPaycheckServiceLine()">+ Add Service Line</button>
+
+                <div style="margin-top: 20px; text-align: right; font-size: 1.1em;">
+                    <p>Subtotal: <strong id="paycheckSubtotal">$0.00</strong></p>
+                    <p>HST (13%): <strong id="paycheckHst">$0.00</strong></p>
+                    <p style="font-size: 1.4em; font-weight: bold; color: var(--primary);">Total Payout: <strong id="paycheckTotal">$0.00</strong></p>
                 </div>
-                <button type="submit" class="btn">Generate Paycheck</button>
+
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal('paycheckModal')">Cancel</button>
+                    <button type="submit" class="btn">Save Paycheck</button>
+                </div>
             </form>
+        </div>
+    </div>
+    
+    <div id="detailsModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="detailsModalTitle">Details</h2>
+                <button class="close-btn" onclick="closeModal('detailsModal')">&times;</button>
+            </div>
+            <div id="detailsModalBody">
+                </div>
+            <div id="detailsModalActions" class="detail-actions">
+                </div>
         </div>
     </div>
 
-<div id="loginModal" class="modal active">
-    <div class="login-form-container">
-        <div class="modal-header" style="flex-direction: column; align-items: center; padding-bottom: 5px;">
-            <h2>Greater Toronto Doulas</h2>
-            <h4 style="font-weight: 300; color: #888; font-size: 1em; margin-top: -10px; margin-bottom: 15px;">Doula Management System</h4>
-            </div>
-        <form id="loginForm" onsubmit="handleLogin(event)">
-                <div class="form-group">
-                    <label for="username">Username</label>
-                    <input type="text" id="username" name="username" required>
-                </div>
-                <div class="form-group">
-                    <label for="password">Password</label>
-                    <input type="password" id="password" name="password" required>
-                </div>
-                <button type="submit" class="btn">Sign In</button>
-                <p id="loginMessage" style="color: var(--danger); margin-top: 10px;"></p>
-            </form>
-        </div>
-    </div>
+
     <script>
-const API_BASE = 'https://gtd-1rkv.onrender.com'; // Change to '' if hosted on same server
-const AUTH_KEY = 'gtd_admin_logged_in';
-const STATIC_USERNAME = 'GTDAdmin';
-const STATIC_PASSWORD = 'Doula@123'; // NOTE: This is client-side and not secure.
+        const API_BASE = 'https://gtd-1rkv.onrender.com'; // Change to '' if hosted on same server
+        const AUTH_KEY = 'gtd_admin_logged_in';
+        const STATIC_USERNAME = 'GTDAdmin';
+        const STATIC_PASSWORD = 'Doula@123'; // NOTE: This is client-side and not secure.
 
-let bookings = [];
-let doulas = [];
-let services = [];
-let paychecks = [];
-let editingId = null;
+        let bookings = [];
+        let doulas = [];
+        let services = [];
+        let paychecks = [];
+        let editingId = null;
 
-// --- UTILS ---
-function formatPhone(str) {
-    if(!str) return '';
-    const cleaned = ('' + str).replace(/\D/g, '');
-    const match = cleaned.match(/^(\d{3})(\d{3})(\d{4})$/);
-    if (match) {
-        return '(' + match[1] + ') ' + match[2] + '-' + match[3];
-    }
-    return str;
-}
+        // --- UTILS ---
 
-function escapeHtml(unsafe) {
-    if (unsafe === undefined || unsafe === null) return '';
-    return String(unsafe)
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;")
-        .replace(/"/g, "&quot;")
-        .replace(/'/g, "&#039;");
-}
-
-// --- API ---
-async function apiGet(path){
-  const res = await fetch(API_BASE + path);
-  if (!res.ok) throw new Error('API error');
-  return res.json();
-}
-async function apiPost(path, body){
-  const res = await fetch(API_BASE + path, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(body)
-  });
-  if (!res.ok) throw new Error('API post error');
-  return res.json();
-}
-async function apiDelete(path){
-  const res = await fetch(API_BASE + path, { method: 'DELETE' });
-  if (!res.ok) throw new Error('API delete error');
-  return res.json();
-}
-async function apiPut(path, body){
-  const res = await fetch(API_BASE + path, {
-    method: 'PUT',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(body)
-  });
-  if (!res.ok) throw new Error('API put error');
-  return res.json();
-}
-
-// --- UI LOGIC ---
-
-function switchTab(tabName, e) {
-  document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
-  document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-  document.getElementById(tabName).classList.add('active');
-  if (e && e.target) e.target.classList.add('active');
-  
-  if (tabName === 'summary') {
-    renderSummary();
-  }
-}
-
-function filterList(containerId, searchText) {
-    const container = document.getElementById(containerId);
-    const items = container.getElementsByClassName("list-item");
-    const filter = searchText.toLowerCase();
-
-    for (let i = 0; i < items.length; i++) {
-        let text = items[i].textContent.toLowerCase();
-        items[i].style.display = text.includes(filter) ? "flex" : "none";
-    }
-}
-
-// Wrapper functions for new items
-function newBooking() { editingId = null; openModal('bookingModal'); }
-function newDoula() { editingId = null; openModal('doulaModal'); }
-function newService() { editingId = null; openModal('serviceModal'); }
-function newPaycheck() { editingId = null; openModal('paycheckModal'); }
-
-// MODIFIED: Logic updated to only reset form if not editing, and set title dynamically
-function openModal(modalId) { 
-  document.getElementById(modalId).classList.add('active');
-  
-  // Clear forms ONLY if we are NOT in an edit flow (editingId is null)
-  if (editingId === null) {
-      const form = document.querySelector(`#${modalId} form`);
-      if(form) form.reset();
-  }
-
-  if (modalId === 'bookingModal') {
-    document.getElementById('bookingModalTitle').textContent = editingId ? 'Edit Booking' : 'New Booking';
-    renderBookingServicesCheckboxes();
-  } else if (modalId === 'doulaModal') {
-    document.getElementById('doulaModalTitle').textContent = editingId ? 'Edit Doula' : 'Add Doula';
-  } else if (modalId === 'serviceModal') {
-    document.getElementById('serviceModalTitle').textContent = editingId ? 'Edit Service' : 'Add Service';
-  } else if (modalId === 'paycheckModal') {
-    document.getElementById('paycheckModalTitle').textContent = editingId ? 'Edit Paycheck' : 'Generate Paycheck';
-    // Only clear and add line for *new* paycheck
-    if(editingId === null) {
-        document.getElementById('paycheckServicesContainer').innerHTML = '';
-        addPaycheckServiceLine();
-    }
-  }
-}
-
-function closeModal(modalId) { 
-  document.getElementById(modalId).classList.remove('active'); 
-  editingId = null;
-}
-
-// NEW: Function to show the main app
-function showMainApp() {
-    document.getElementById('loginModal').classList.remove('active');
-    document.getElementById('mainAppContainer').style.display = 'block';
-    initApp(); // Load data once logged in
-}
-
-// NEW: Function to handle Logout
-function handleLogout() {
-    localStorage.removeItem(AUTH_KEY);
-    document.getElementById('mainAppContainer').style.display = 'none';
-    document.getElementById('loginModal').classList.add('active');
-    document.getElementById('loginMessage').textContent = 'Logged out successfully.';
-    document.getElementById('loginMessage').style.color = 'var(--success)';
-}
-
-// NEW: Static client-side login implementation
-function handleLogin(e) {
-    e.preventDefault();
-    const username = e.target.username.value;
-    const password = e.target.password.value;
-    const msgElement = document.getElementById('loginMessage');
-    
-    // --- STATIC LOGIN CHECK ---
-    if (username === STATIC_USERNAME && password === STATIC_PASSWORD) {
-        msgElement.textContent = 'Login successful! Access granted.';
-        msgElement.style.color = 'var(--success)';
-        localStorage.setItem(AUTH_KEY, 'true'); // Simulate session
-        setTimeout(() => {
-            showMainApp();
-        }, 500);
-    } else {
-        msgElement.textContent = 'Invalid username or password.';
-        msgElement.style.color = 'var(--danger)';
-    }
-}
-
-
-// --- BOOKINGS (Card View + Details Modal) ---
-
-function renderBookings() {
-    const container = document.getElementById('bookingsList');
-    if (!bookings || bookings.length === 0) {
-        container.innerHTML = '<div style="text-align:center; color:#999; padding:20px;">No bookings found.</div>';
-        return;
-    }
-    
-    // Sort slightly by ID (newest last) or you could do by date
-    container.innerHTML = bookings.map(b => `
-        <div class="list-item" onclick="viewBookingDetails(${b.id})">
-            <div class="list-item-name">${escapeHtml(b.clientName)}</div>
-            <div class="list-item-icon">Details &rsaquo;</div>
-        </div>
-    `).join('');
-}
-
-function viewBookingDetails(id) {
-    const b = bookings.find(item => item.id === id);
-    if (!b) return;
-
-    const modal = document.getElementById('detailsModal');
-    const title = document.getElementById('detailsTitle');
-    const body = document.getElementById('detailsBody');
-    const actions = document.getElementById('detailsActions');
-
-    title.textContent = b.clientName;
-    body.innerHTML = `
-        <div class="detail-row"><span class="detail-label">Due Date:</span><span class="detail-value">${escapeHtml(b.dueDate || 'N/A')}</span></div>
-        <div class="detail-row"><span class="detail-label">Phone:</span><span class="detail-value"><a href="tel:${escapeHtml(b.phone)}">${formatPhone(b.phone)}</a></span></div>
-        <div class="detail-row"><span class="detail-label">Email:</span><span class="detail-value"><a href="mailto:${escapeHtml(b.email)}">${escapeHtml(b.email)}</a></span></div>
-        <div class="detail-row"><span class="detail-label">Doula:</span><span class="detail-value">${escapeHtml(b.assignedDoula || 'Unassigned')}</span></div>
-        <div class="detail-row"><span class="detail-label">Status:</span><span class="detail-value">${escapeHtml(b.status)}</span></div>
-        <div class="detail-row"><span class="detail-label">Paid:</span><span class="detail-value">${escapeHtml(b.paid)}</span></div>
-        <div class="detail-row"><span class="detail-label">Services:</span><span class="detail-value">${escapeHtml(b.services)}</span></div>
-    `;
-
-    actions.innerHTML = `
-        <button class="btn btn-edit" onclick="editBooking(${b.id})">Edit Booking</button>
-        <button class="btn btn-danger" onclick="deleteItem('booking', ${b.id})">Delete</button>
-    `;
-
-    modal.classList.add('active');
-}
-
-// --- DOULAS (Card View + Details Modal) ---
-
-function renderDoulas() {
-    const container = document.getElementById('doulasList');
-    if (!doulas || doulas.length === 0) {
-        container.innerHTML = '<div style="text-align:center; color:#999; padding:20px;">No doulas found.</div>';
-        return;
-    }
-    
-    container.innerHTML = doulas.map(d => `
-        <div class="list-item" onclick="viewDoulaDetails(${d.id})">
-            <div class="list-item-name">${escapeHtml(d.name)}</div>
-            <div class="list-item-icon">Details &rsaquo;</div>
-        </div>
-    `).join('');
-}
-
-function viewDoulaDetails(id) {
-    const d = doulas.find(item => item.id === id);
-    if (!d) return;
-
-    const modal = document.getElementById('detailsModal');
-    const title = document.getElementById('detailsTitle');
-    const body = document.getElementById('detailsBody');
-    const actions = document.getElementById('detailsActions');
-
-    title.textContent = d.name;
-    body.innerHTML = `
-        <div class="detail-row"><span class="detail-label">Phone:</span><span class="detail-value"><a href="tel:${escapeHtml(d.phone)}">${formatPhone(d.phone)}</a></span></div>
-        <div class="detail-row"><span class="detail-label">Email:</span><span class="detail-value"><a href="mailto:${escapeHtml(d.email)}">${escapeHtml(d.email)}</a></span></div>
-        <div class="detail-row"><span class="detail-label">Address:</span><span class="detail-value">${escapeHtml(d.address)}</span></div>
-        <div class="detail-row"><span class="detail-label">Services:</span><span class="detail-value" style="white-space:pre-wrap;">${escapeHtml(d.servicesOffered)}</span></div>
-    `;
-
-    actions.innerHTML = `
-        <button class="btn btn-edit" onclick="editDoula(${d.id})">Edit Profile</button>
-        <button class="btn btn-danger" onclick="deleteItem('doula', ${d.id})">Delete</button>
-    `;
-
-    modal.classList.add('active');
-}
-
-// --- SERVICES (Table View - No changes to structure, just format) ---
-
-function renderServices() {
-  const tbody = document.getElementById('servicesTableBody');
-  if (!services || services.length === 0) {
-    tbody.innerHTML = '<tr><td colspan="5" style="text-align: center; padding: 40px; color: #999;">No services yet.</td></tr>';
-    return;
-  }
-  tbody.innerHTML = services.map(s => `
-    <tr>
-      <td data-label="Service Name">${escapeHtml(s.serviceName)}</td>
-      <td data-label="Client Price">$${Number(s.clientPrice).toFixed(2)}</td>
-      <td data-label="Doula Payout">$${Number(s.doulaPayout).toFixed(2)}</td>
-      <td data-label="Agency Profit">$${Number(s.agencyProfit).toFixed(2)}</td>
-      <td class="action-btns">
-        <button class="btn btn-small btn-edit" onclick="editService(${s.id})">Edit</button>
-        <button class="btn btn-small btn-danger" onclick="deleteItem('service', ${s.id})">Delete</button>
-      </td>
-    </tr>
-  `).join('');
-}
-
-// --- PAYCHECKS (Enhanced) ---
-
-function updatePaycheckWeekFilter() {
-    const select = document.getElementById('paycheckWeekFilter');
-    const currentVal = select.value;
-    
-    // Get unique weeks
-    const weeks = [...new Set(paychecks.map(p => p.weekNumber))].sort((a,b) => a-b);
-    
-    select.innerHTML = '<option value="all">Show All Weeks</option>' + 
-        weeks.map(w => `<option value="${w}">Week ${w}</option>`).join('');
-    
-    // Restore selection if possible
-    if(weeks.includes(currentVal) || currentVal === 'all') {
-        select.value = currentVal;
-    }
-}
-
-// ... (inside the <script> block)
-
-function renderPaychecks() {
-  const tbody = document.getElementById('paychecksTableBody');
-  const filterWeek = document.getElementById('paycheckWeekFilter').value;
-  
-  let filtered = paychecks;
-  if (filterWeek !== 'all') {
-      filtered = paychecks.filter(p => String(p.weekNumber) === filterWeek);
-  }
-
-  if (!filtered || filtered.length === 0) {
-    tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; padding: 40px; color: #999;">No paychecks found.</td></tr>';
-    return;
-  }
-
-  tbody.innerHTML = filtered.map(p => {
-    // Improved Service Breakdown Styling
-    const servicesList = (p.serviceDetails || []).map(sd => `
-        <li class="paycheck-service-row">
-            <span>${escapeHtml(sd.name)} <small style="color:#999;">x${sd.quantity}</small></span>
-            <span class="paycheck-amount">$${(sd.amount).toFixed(2)}</span>
-        </li>
-    `).join('');
-
-    return `
-    <tr>
-      <td data-label="Week">Week ${escapeHtml(p.weekNumber)}</td>
-      <td data-label="Doula" style="font-weight:600; color:var(--primary);">${escapeHtml(p.doula)}</td>
-      <td data-label="Date">${escapeHtml(p.invoiceDate)}</td>
-      <td data-label="Services">
-        <ul class="paycheck-service-list">
-            ${servicesList || '<li style="color:#999;">No services</li>'}
-        </ul>
-      </td>
-      <td data-label="Total" style="font-weight:bold;">$${Number(p.total).toFixed(2)}</td>
-      <td class="action-btns">
-        <button class="btn btn-small btn-edit" onclick="editPaycheck(${p.id})">Edit</button> 
-        <button class="btn btn-small btn-danger" onclick="deleteItem('paycheck', ${p.id})">Delete</button>
-      </td>
-    </tr>
-  `}).join('');
-}
-// ...
-
-
-// --- SUMMARY REPORTS (Redesigned) ---
-
-function renderSummary() {
-    const container = document.getElementById('summaryContent');
-    const mode = document.getElementById('summaryType').value; // 'ytd' or 'weekly'
-    const weekSelectWrapper = document.getElementById('summaryWeekSelectWrapper');
-    const weekSelect = document.getElementById('summaryWeekSelect');
-
-    // Handle Dropdown visibility
-    if (mode === 'weekly') {
-        weekSelectWrapper.style.display = 'block';
-        // Populate weeks if empty
-        const weeks = [...new Set(paychecks.map(p => p.weekNumber))].sort((a,b) => a-b);
-        if (weekSelect.innerHTML === '') {
-             weekSelect.innerHTML = weeks.map(w => `<option value="${w}">Week ${w}</option>`).join('');
+        function formatPhone(str) {
+            if(!str) return '';
+            const cleaned = ('' + str).replace(/\D/g, '');
+            const match = cleaned.match(/^(\d{3})(\d{3})(\d{4})$/);
+            if (match) {
+                return '(' + match[1] + ') ' + match[2] + '-' + match[3];
+            }
+            return str;
         }
-    } else {
-        weekSelectWrapper.style.display = 'none';
-        weekSelect.innerHTML = ''; // Clear so it re-populates next time
-    }
 
-    // Logic
-    if (mode === 'ytd') {
-        renderYTDSummary(container);
-    } else {
-        const selectedWeek = weekSelect.value;
-        if (!selectedWeek) {
-            container.innerHTML = '<div style="padding:20px; text-align:center; color:#999;">No weeks available data.</div>';
-            return;
+        function escapeHtml(unsafe) {
+            if (unsafe === undefined || unsafe === null) return '';
+            return String(unsafe)
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
         }
-        renderWeeklySummary(container, selectedWeek);
-    }
-}
-
-function renderYTDSummary(container) {
-    // 1. Total Agency Revenue (Gross) vs Payouts
-    // 2. Breakdown per Doula (Total Paid)
-    
-    let totalPaid = 0;
-    let doulaEarnings = {};
-
-    paychecks.forEach(p => {
-        const amt = Number(p.total || 0);
-        totalPaid += amt;
-        if (!doulaEarnings[p.doula]) doulaEarnings[p.doula] = 0;
-        doulaEarnings[p.doula] += amt;
-    });
-
-    let html = `
-        <div class="stats-grid">
-            <div class="stat-card">
-                <div class="stat-label">YTD Doula Payouts</div>
-                <div class="stat-value">$${totalPaid.toFixed(2)}</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-label">Active Doulas</div>
-                <div class="stat-value">${Object.keys(doulaEarnings).length}</div>
-            </div>
-        </div>
         
-        <h3>Doula Earnings (YTD)</h3>
-        <table>
-            <thead><tr><th>Doula Name</th><th>Total Paid</th></tr></thead>
-            <tbody>
-    `;
-    
-    Object.keys(doulaEarnings).forEach(name => {
-        html += `<tr><td>${name}</td><td>$${doulaEarnings[name].toFixed(2)}</td></tr>`;
-    });
-    
-    html += `</tbody></table>`;
-    container.innerHTML = html;
-}
+        // --- API HELPERS ---
+        async function apiCall(method, path, data) {
+            const response = await fetch(API_BASE + path, {
+                method: method,
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: data ? JSON.stringify(data) : undefined,
+            });
 
-function renderWeeklySummary(container, weekNum) {
-    const weeklyChecks = paychecks.filter(p => String(p.weekNumber) === weekNum);
-    
-    let weeklyTotal = 0;
-    let serviceCounts = {};
+            if (!response.ok) {
+                const errorText = await response.text();
+                throw new Error(`API Error: ${response.status} - ${errorText}`);
+            }
 
-    weeklyChecks.forEach(p => {
-        weeklyTotal += Number(p.total || 0);
-        (p.serviceDetails || []).forEach(sd => {
-            if (!serviceCounts[sd.name]) serviceCounts[sd.name] = { qty: 0, amt: 0 };
-            serviceCounts[sd.name].qty += sd.quantity;
-            serviceCounts[sd.name].amt += sd.amount;
+            return response.json();
+        }
+
+        const apiGet = (path) => apiCall('GET', path);
+        const apiPost = (path, data) => apiCall('POST', path, data);
+        const apiPut = (path, data) => apiCall('PUT', path, data);
+        const apiDelete = (path) => apiCall('DELETE', path);
+        
+        // --- AUTH LOGIC ---
+
+        document.getElementById('loginForm').addEventListener('submit', handleLogin);
+        
+        async function handleLogin(e) {
+            e.preventDefault();
+            const username = e.target.username.value;
+            const password = e.target.password.value;
+            const messageEl = document.getElementById('loginMessage');
+            
+            if (username === STATIC_USERNAME && password === STATIC_PASSWORD) {
+                localStorage.setItem(AUTH_KEY, 'true');
+                showMainApp();
+            } else {
+                messageEl.textContent = 'Invalid username or password.';
+            }
+        }
+
+        function handleLogout() {
+            if (confirm('Are you sure you want to log out?')) {
+                localStorage.removeItem(AUTH_KEY);
+                window.location.reload();
+            }
+        }
+
+        // --- TAB SWITCHING ---
+
+        // Function to switch tabs
+        function switchTab(tabId, event) {
+            // Deactivate all tabs
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+
+            // Activate selected tab and content
+            document.querySelector(`.tab-btn[onclick*="${tabId}"]`).classList.add('active');
+            document.getElementById(tabId + 'Tab').classList.add('active');
+            
+            // FIX 1: Scroll to the top of the page when switching tabs.
+            // This prevents the page from anchoring below the navigation bar.
+            window.scrollTo(0, 0); 
+        }
+
+        // --- BOOKINGS (List View + Details Modal) ---
+
+        function renderBookings() {
+            const container = document.getElementById('bookingsList');
+            const searchTerm = document.getElementById('bookingSearch').value.toLowerCase();
+            
+            const filteredBookings = bookings.filter(b => 
+                (b.clientName && b.clientName.toLowerCase().includes(searchTerm)) ||
+                (b.assignedDoula && b.assignedDoula.toLowerCase().includes(searchTerm))
+            );
+
+            container.innerHTML = filteredBookings.map(b => `
+                <div class="list-item" onclick="showBookingDetails(${b.id})">
+                    <div class="list-item-name">${escapeHtml(b.clientName)} - ${escapeHtml(b.assignedDoula || 'Unassigned')}</div>
+                    <div class="list-item-icon">${escapeHtml(b.status)}</div>
+                </div>
+            `).join('');
+        }
+
+        function newBooking() {
+            editingId = null;
+            openModal('bookingModal');
+        }
+
+        function showBookingDetails(id) {
+            const booking = bookings.find(b => b.id === id);
+            if (!booking) return;
+
+            const modal = document.getElementById('detailsModal');
+            document.getElementById('detailsModalTitle').textContent = `Booking Details: ${escapeHtml(booking.clientName)}`;
+            const body = document.getElementById('detailsModalBody');
+            const actions = document.getElementById('detailsModalActions');
+
+            const b = booking;
+            body.innerHTML = `
+                <div class="detail-row"><span class="detail-label">Client Name:</span><span class="detail-value">${escapeHtml(b.clientName)}</span></div>
+                <div class="detail-row"><span class="detail-label">Due Date:</span><span class="detail-value">${escapeHtml(b.dueDate || 'N/A')}</span></div>
+                <div class="detail-row"><span class="detail-label">Phone:</span><span class="detail-value"><a href="tel:${escapeHtml(b.phone)}">${formatPhone(b.phone)}</a></span></div>
+                <div class="detail-row"><span class="detail-label">Email:</span><span class="detail-value"><a href="mailto:${escapeHtml(b.email)}">${escapeHtml(b.email)}</a></span></div>
+                <div class="detail-row"><span class="detail-label">Doula:</span><span class="detail-value">${escapeHtml(b.assignedDoula || 'Unassigned')}</span></div>
+                <div class="detail-row"><span class="detail-label">Status:</span><span class="detail-value">${escapeHtml(b.status)}</span></div>
+                <div class="detail-row"><span class="detail-label">Paid:</span><span class="detail-value">${escapeHtml(b.paid)}</span></div>
+                <div class="detail-row"><span class="detail-label">Services:</span><span class="detail-value">${escapeHtml(b.services)}</span></div>
+            `;
+            actions.innerHTML = `
+                <button class="btn btn-edit" onclick="editBooking(${b.id})">Edit Booking</button>
+                <button class="btn btn-danger" onclick="deleteItem('booking', ${b.id})">Delete</button>
+            `;
+            modal.classList.add('active');
+        }
+
+        // --- DOULAS (Card View + Details Modal) ---
+
+        function renderDoulas() {
+            const container = document.getElementById('doulasList');
+            const searchTerm = document.getElementById('doulaSearch').value.toLowerCase();
+            
+            if (!doulas || doulas.length === 0) {
+                container.innerHTML = '<p style="text-align:center; padding: 20px;">No doulas found.</p>';
+                return;
+            }
+
+            const filteredDoulas = doulas.filter(d => 
+                (d.name && d.name.toLowerCase().includes(searchTerm)) ||
+                (d.servicesOffered && d.servicesOffered.toLowerCase().includes(searchTerm))
+            );
+            
+            container.innerHTML = filteredDoulas.map(d => `
+                <div class="list-item" onclick="showDoulaDetails(${d.id})">
+                    <div class="list-item-name">${escapeHtml(d.name)}</div>
+                    <div class="list-item-icon">${escapeHtml(d.servicesOffered)}</div>
+                </div>
+            `).join('');
+        }
+
+        function newDoula() {
+            editingId = null;
+            openModal('doulaModal');
+        }
+
+        function showDoulaDetails(id) {
+            const doula = doulas.find(d => d.id === id);
+            if (!doula) return;
+
+            const modal = document.getElementById('detailsModal');
+            document.getElementById('detailsModalTitle').textContent = `Doula Details: ${escapeHtml(doula.name)}`;
+            const body = document.getElementById('detailsModalBody');
+            const actions = document.getElementById('detailsModalActions');
+
+            const d = doula;
+            body.innerHTML = `
+                <div class="detail-row"><span class="detail-label">Name:</span><span class="detail-value">${escapeHtml(d.name)}</span></div>
+                <div class="detail-row"><span class="detail-label">Phone:</span><span class="detail-value"><a href="tel:${escapeHtml(d.phone)}">${formatPhone(d.phone)}</a></span></div>
+                <div class="detail-row"><span class="detail-label">Email:</span><span class="detail-value"><a href="mailto:${escapeHtml(d.email)}">${escapeHtml(d.email)}</a></span></div>
+                <div class="detail-row"><span class="detail-label">Address:</span><span class="detail-value">${escapeHtml(d.address || 'N/A')}</span></div>
+                <div class="detail-row"><span class="detail-label">Services:</span><span class="detail-value">${escapeHtml(d.servicesOffered || 'None listed')}</span></div>
+            `;
+            actions.innerHTML = `
+                <button class="btn btn-edit" onclick="editDoula(${d.id})">Edit Doula</button>
+                <button class="btn btn-danger" onclick="deleteItem('doula', ${d.id})">Delete</button>
+            `;
+            modal.classList.add('active');
+        }
+
+        // --- SERVICES (Table View + Edit Modal) ---
+        
+        function renderServices() {
+            const container = document.getElementById('servicesTableBody');
+            const searchTerm = document.getElementById('serviceSearch').value.toLowerCase();
+            
+            const filteredServices = services.filter(s => 
+                (s.serviceName && s.serviceName.toLowerCase().includes(searchTerm))
+            );
+
+            container.innerHTML = filteredServices.map(s => `
+                <tr>
+                    <td data-label="Service Name">${escapeHtml(s.serviceName)}</td>
+                    <td data-label="Client Price">$${Number(s.clientPrice).toFixed(2)}</td>
+                    <td data-label="Doula Payout">$${Number(s.doulaPayout).toFixed(2)}</td>
+                    <td data-label="Agency Profit">$${Number(s.agencyProfit).toFixed(2)}</td>
+                    <td data-label="Actions">
+                        <button class="btn btn-small btn-edit" onclick="editService(${s.id})">Edit</button>
+                        <button class="btn btn-small btn-danger" onclick="deleteItem('service', ${s.id})">Delete</button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+        
+        function newService() {
+            editingId = null;
+            openModal('serviceModal');
+        }
+
+        function editService(id) {
+            const service = services.find(s => s.id === id);
+            if (!service) return;
+
+            editingId = id;
+            const form = document.getElementById('serviceForm');
+            form.elements.serviceName.value = service.serviceName || '';
+            form.elements.clientPrice.value = service.clientPrice || 0;
+            form.elements.doulaPayout.value = service.doulaPayout || 0;
+            form.elements.agencyProfit.value = service.agencyProfit || 0;
+            
+            openModal('serviceModal');
+        }
+        
+        // --- PAYCHECKS (Table View + Generate Modal) ---
+
+        function renderPaychecks() {
+            const container = document.getElementById('paychecksTableBody');
+            const weekFilter = document.getElementById('paycheckWeekFilter').value;
+            const doulaFilter = document.getElementById('paycheckDoulaFilter').value;
+
+            const filteredPaychecks = paychecks.filter(p => {
+                const weekMatch = !weekFilter || p.weekNumber === weekFilter;
+                const doulaMatch = !doulaFilter || p.doula === doulaFilter;
+                return weekMatch && doulaMatch;
+            });
+            
+            container.innerHTML = filteredPaychecks.map(p => {
+                // Improved Service Breakdown Styling
+                const servicesList = (p.serviceDetails || []).map(sd => `
+                    <li class="paycheck-service-row">
+                        <span>${escapeHtml(sd.name)} <small style="color:#999;">x${sd.quantity}</small></span>
+                        <span class="paycheck-amount">$${(sd.amount).toFixed(2)}</span>
+                    </li>
+                `).join('');
+
+                return `
+                    <tr>
+                        <td data-label="Week">Week ${escapeHtml(p.weekNumber)}</td>
+                        <td data-label="Doula" style="font-weight:600; color:var(--primary);">${escapeHtml(p.doula)}</td>
+                        <td data-label="Date">${escapeHtml(p.invoiceDate)}</td>
+                        <td data-label="Services">
+                            <ul class="paycheck-service-list">
+                                ${servicesList || '<li style="color:#999;">No services</li>'}
+                            </ul>
+                        </td>
+                        <td data-label="Total" style="font-weight:bold;">$${Number(p.total).toFixed(2)}</td>
+                        <td class="action-btns">
+                            <button class="btn btn-small btn-edit" onclick="editPaycheck(${p.id})">Edit</button>
+                            <button class="btn btn-small btn-danger" onclick="deleteItem('paycheck', ${p.id})">Delete</button>
+                        </td>
+                    </tr>
+                `}).join('');
+        }
+
+        function updatePaycheckWeekFilter() {
+            const select = document.getElementById('paycheckWeekFilter');
+            const weeks = [...new Set(paychecks.map(p => p.weekNumber))].sort((a, b) => Number(b) - Number(a)); // Sort descending
+            const current = select.value;
+            select.innerHTML = '<option value="">All Weeks</option>' + 
+                weeks.map(w => `<option value="${escapeHtml(w)}">${escapeHtml(w)}</option>`).join('');
+            select.value = current;
+        }
+
+        function newPaycheck() {
+            editingId = null;
+            openModal('paycheckModal');
+        }
+        
+        function editPaycheck(id) {
+            const paycheck = paychecks.find(p => p.id === id);
+            if (!paycheck) return;
+
+            editingId = id;
+            const form = document.getElementById('paycheckForm');
+            
+            form.elements.doula.value = paycheck.doula || '';
+            form.elements.weekNumber.value = paycheck.weekNumber || '';
+            form.elements.invoiceDate.value = paycheck.invoiceDate || '';
+
+            const container = document.getElementById('paycheckServicesContainer');
+            container.innerHTML = ''; // Clear existing lines
+
+            if (paycheck.serviceDetails && paycheck.serviceDetails.length > 0) {
+                paycheck.serviceDetails.forEach(detail => {
+                    addPaycheckServiceLine();
+                    const lines = container.querySelectorAll('.service-line-item');
+                    const lastLine = lines[lines.length - 1];
+                    const service = services.find(s => s.serviceName === detail.name);
+                    
+                    if (service) {
+                        lastLine.querySelector('.paycheck-service').value = service.id;
+                        lastLine.querySelector('.paycheck-quantity').value = detail.quantity;
+                    }
+                });
+            } else {
+                addPaycheckServiceLine();
+            }
+
+            // Must manually trigger total update after populating lines
+            calculatePaycheckTotals(); 
+
+            openModal('paycheckModal');
+        }
+
+        function calculatePaycheckTotals() {
+            let subtotal = 0;
+            const lines = document.getElementById('paycheckServicesContainer').querySelectorAll('.service-line-item');
+
+            lines.forEach(line => {
+                const serviceId = line.querySelector('.paycheck-service').value;
+                const quantity = Number(line.querySelector('.paycheck-quantity').value);
+                const service = services.find(s => s.id == serviceId);
+                
+                if (service && quantity > 0) {
+                    subtotal += service.doulaPayout * quantity;
+                }
+            });
+
+            const hst = subtotal * 0.13;
+            const total = subtotal + hst;
+            
+            document.getElementById('paycheckSubtotal').textContent = `$${subtotal.toFixed(2)}`;
+            document.getElementById('paycheckHst').textContent = `$${hst.toFixed(2)}`;
+            document.getElementById('paycheckTotal').textContent = `$${total.toFixed(2)}`;
+        }
+        
+        // Listen for changes in the Paycheck modal to update totals
+        document.getElementById('paycheckModal').addEventListener('input', (e) => {
+             // Only recalculate on changes to service or quantity inputs inside a line item
+             if (e.target.classList.contains('paycheck-service') || e.target.classList.contains('paycheck-quantity')) {
+                calculatePaycheckTotals();
+             }
         });
-    });
 
-    let html = `
-        <div class="stats-grid">
-             <div class="stat-card">
-                <div class="stat-label">Week ${weekNum} Payouts</div>
-                <div class="stat-value">$${weeklyTotal.toFixed(2)}</div>
-            </div>
-        </div>
+        function addPaycheckServiceLine() {
+            const container = document.getElementById('paycheckServicesContainer');
+            
+            // Generate service options dynamically based on available services
+            const serviceOptions = services.map(s => 
+                `<option value="${s.id}">${escapeHtml(s.serviceName)} - $${Number(s.doulaPayout).toFixed(2)} p/u</option>`
+            ).join('');
 
-        <h3>Service Breakdown (Week ${weekNum})</h3>
-        <table>
-            <thead><tr><th>Service</th><th>Quantity</th><th>Total Value</th></tr></thead>
-            <tbody>
-    `;
+            const line = document.createElement('div');
+            line.className = 'service-line-item form-grid';
+            line.style.marginBottom = '10px';
+            line.style.alignItems = 'flex-end';
+            line.style.gap = '10px';
+            line.style.gridTemplateColumns = '3fr 1fr auto';
 
-    Object.keys(serviceCounts).forEach(sName => {
-        html += `<tr>
-            <td>${sName}</td>
-            <td>${serviceCounts[sName].qty}</td>
-            <td>$${serviceCounts[sName].amt.toFixed(2)}</td>
-        </tr>`;
-    });
+            line.innerHTML = `
+                <div class="form-group" style="margin: 0; flex:3;">
+                    <label>Service</label>
+                    <select class="paycheck-service" required style="width:100%;">
+                        <option value="">Select Service</option>
+                        ${serviceOptions}
+                    </select>
+                </div>
+                <div class="form-group" style="margin: 0; flex:1;">
+                    <label>Qty</label>
+                    <input type="number" class="paycheck-quantity" min="1" value="1" required style="width:100%;">
+                </div>
+                <button type="button" class="btn btn-small btn-remove-line" onclick="this.closest('.service-line-item').remove(); calculatePaycheckTotals();">X</button>
+            `;
+            container.appendChild(line);
 
-    if (Object.keys(serviceCounts).length === 0) {
-        html += `<tr><td colspan="3" style="text-align:center;">No services recorded this week.</td></tr>`;
-    }
+            // Recalculate totals every time a new line is added
+            calculatePaycheckTotals();
+        }
 
-    html += `</tbody></table>`;
-    container.innerHTML = html;
-}
+        // --- SUMMARY REPORTS ---
 
-// --- SAVE / EDIT / DELETE LOGIC ---
+        function renderSummary() {
+            const statsContainer = document.getElementById('summaryStats');
+            const bookingsCompleted = bookings.filter(b => b.status === 'Completed').length;
+            const totalDoulas = doulas.length;
+            const totalProfit = paychecks.reduce((sum, p) => {
+                // Find services used in paycheck
+                const paycheckServiceDetails = p.serviceDetails || [];
+                
+                const paycheckProfit = paycheckServiceDetails.reduce((pSum, sd) => {
+                    const service = services.find(s => s.serviceName === sd.name);
+                    if (service) {
+                         // Calculate profit per service based on quantity
+                         const profitPerUnit = service.clientPrice - service.doulaPayout;
+                         return pSum + (profitPerUnit * sd.quantity);
+                    }
+                    return pSum;
+                }, 0);
+                
+                // Note: This logic for profit is flawed if the service details in paychecks.json 
+                // only contain the payout amount, not the client price. 
+                // Assuming services object is the source of truth for profit.
+                return sum + paycheckProfit;
+            }, 0);
 
-async function saveBooking(e) {
-  e.preventDefault();
-  const formData = new FormData(e.target);
-  const selectedServices = Array.from(document.querySelectorAll('#bookingServicesContainer input:checked'))
-    .map(cb => {
-      const service = services.find(s => s.id == cb.value);
-      return service ? service.serviceName : '';
-    }).filter(Boolean);
-  
-  const booking = {
-    clientName: formData.get('clientName'),
-    dueDate: formData.get('dueDate'),
-    phone: formData.get('phone'),
-    email: formData.get('email'),
-    services: selectedServices.join(', '),
-    assignedDoula: formData.get('assignedDoula'),
-    status: formData.get('status'),
-    paid: formData.get('paid')
-  };
-  
-  if (editingId) {
-    booking.id = editingId;
-    const idx = bookings.findIndex(b => b.id === editingId);
-    if(idx !== -1) bookings[idx] = { ...bookings[idx], ...booking };
-    await apiPut(`/api/bookings/${editingId}`, booking);
-  } else {
-    const created = await apiPost('/api/bookings', booking);
-    bookings.push(created);
-  }
-  
-  renderBookings();
-  closeModal('bookingModal');
-}
+            statsContainer.innerHTML = `
+                <div class="stat-card">
+                    <div class="stat-label">Total Doulas</div>
+                    <div class="stat-value">${totalDoulas}</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Completed Bookings</div>
+                    <div class="stat-value">${bookingsCompleted}</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Total Estimated Profit (YTD)</div>
+                    <div class="stat-value">$${totalProfit.toFixed(2)}</div>
+                </div>
+            `;
+            
+            // Service Report by Week
+            const reportWeekInput = document.getElementById('reportWeek');
+            const currentWeek = reportWeekInput.value || getDefaultWeek();
+            
+            if (!reportWeekInput.value) {
+                reportWeekInput.value = currentWeek; // Set default value visually
+            }
 
-async function saveDoula(e) {
-  e.preventDefault();
-  const formData = new FormData(e.target);
-  const doula = {
-    name: formData.get('name'),
-    phone: formData.get('phone'),
-    email: formData.get('email'),
-    address: formData.get('address'),
-    servicesOffered: formData.get('servicesOffered')
-  };
-  
-  if (editingId) {
-    doula.id = editingId;
-    const idx = doulas.findIndex(d => d.id === editingId);
-    if(idx !== -1) doulas[idx] = { ...doulas[idx], ...doula };
-    await apiPut(`/api/doulas/${editingId}`, doula);
-  } else {
-    const created = await apiPost('/api/doulas', doula);
-    doulas.push(created);
-  }
-  
-  renderDoulas();
-  updateDoulaDropdowns();
-  closeModal('doulaModal');
-}
+            const weekNumber = currentWeek.substring(currentWeek.indexOf('W') + 1);
+            
+            const weeklyPaychecks = paychecks.filter(p => p.weekNumber === weekNumber);
+            const serviceCounts = {};
 
-async function saveService(e) {
-  e.preventDefault();
-  const formData = new FormData(e.target);
-  const clientPrice = parseFloat(formData.get('clientPrice'));
-  const doulaPayout = parseFloat(formData.get('doulaPayout'));
-  const service = {
-    serviceName: formData.get('serviceName'),
-    clientPrice,
-    doulaPayout,
-    agencyProfit: clientPrice - doulaPayout
-  };
-  
-  if (editingId) {
-    service.id = editingId;
-    const idx = services.findIndex(s => s.id === editingId);
-    if(idx !== -1) services[idx] = { ...services[idx], ...service };
-    await apiPut(`/api/services/${editingId}`, service);
-  } else {
-    const created = await apiPost('/api/services', service);
-    services.push(created);
-  }
-  
-  renderServices();
-  closeModal('serviceModal');
-}
+            weeklyPaychecks.forEach(p => {
+                (p.serviceDetails || []).forEach(sd => {
+                    const sName = sd.name;
+                    const amount = sd.amount; // This is the doula payout amount for this service line
+                    const quantity = sd.quantity;
+                    
+                    if (!serviceCounts[sName]) {
+                        serviceCounts[sName] = { qty: 0, amt: 0 };
+                    }
+                    serviceCounts[sName].qty += quantity;
+                    // For the report, let's track the Client Price total (not doula payout)
+                    const serviceConfig = services.find(s => s.serviceName === sName);
+                    if (serviceConfig) {
+                        serviceCounts[sName].amt += serviceConfig.clientPrice * quantity;
+                    }
+                });
+            });
 
-async function savePaycheck(e) {
-  e.preventDefault();
-  const formData = new FormData(e.target);
-  const serviceLines = document.querySelectorAll('.service-line-item');
-  
-  const serviceDetails = [];
-  let subtotal = 0;
-  
-  serviceLines.forEach(line => {
-    const serviceSelect = line.querySelector('.paycheck-service');
-    const quantityInput = line.querySelector('.paycheck-quantity');
-    
-    if (serviceSelect.value && quantityInput.value) {
-      const serviceId = Number(serviceSelect.value);
-      const service = services.find(s => s.id === serviceId);
-      const quantity = parseInt(quantityInput.value);
-      
-      if (service) {
-        const lineTotal = service.doulaPayout * quantity;
-        serviceDetails.push({
-          name: service.serviceName,
-          quantity: quantity,
-          rate: service.doulaPayout,
-          amount: lineTotal
+            const container = document.getElementById('servicesReportContainer');
+            let html = `
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Service Name</th>
+                            <th>Total Quantity</th>
+                            <th>Total Client Revenue</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+            
+            Object.keys(serviceCounts).forEach(sName => {
+                html += `<tr> 
+                    <td>${sName}</td> 
+                    <td>${serviceCounts[sName].qty}</td> 
+                    <td>$${serviceCounts[sName].amt.toFixed(2)}</td> 
+                </tr>`;
+            });
+
+            if (Object.keys(serviceCounts).length === 0) {
+                html += `<tr><td colspan="3" style="text-align:center;">No services recorded this week.</td></tr>`;
+            }
+            
+            html += `</tbody></table>`;
+            container.innerHTML = html;
+        }
+
+        function getDefaultWeek() {
+            const now = new Date();
+            const year = now.getFullYear();
+            
+            // Calculate week number (ISO 8601 compliant)
+            const d = new Date(Date.UTC(now.getFullYear(), now.getMonth(), now.getDate()));
+            const dayNum = d.getUTCDay() || 7;
+            d.setUTCDate(d.getUTCDate() + 4 - dayNum);
+            const yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1));
+            const weekNo = Math.ceil((((d - yearStart) / 86400000) + 1) / 7);
+            
+            const weekStr = String(weekNo).padStart(2, '0');
+            return `${year}-W${weekStr}`;
+        }
+        
+        // --- SAVE / EDIT / DELETE LOGIC ---
+
+        async function saveBooking(e) {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+            const selectedServices = Array.from(document.querySelectorAll('#bookingServicesContainer input:checked'))
+                .map(cb => {
+                    const service = services.find(s => s.id == cb.value);
+                    return service ? service.serviceName : '';
+                }).filter(Boolean);
+            
+            const booking = {
+                clientName: formData.get('clientName'),
+                dueDate: formData.get('dueDate'),
+                phone: formData.get('phone'),
+                email: formData.get('email'),
+                services: selectedServices.join(', '),
+                assignedDoula: formData.get('assignedDoula'),
+                status: formData.get('status'),
+                paid: formData.get('paid')
+            };
+
+            // FIX 2: Added try...catch block to handle API errors and provide user feedback
+            try {
+                if (editingId) {
+                    booking.id = editingId;
+                    const idx = bookings.findIndex(b => b.id === editingId);
+                    if(idx !== -1) bookings[idx] = { ...bookings[idx], ...booking };
+                    await apiPut(`/api/bookings/${editingId}`, booking);
+                } else {
+                    // Note: The API should return the new object with an ID
+                    const created = await apiPost('/api/bookings', booking);
+                    bookings.push(created);
+                }
+                renderBookings();
+                closeModal('bookingModal');
+            } catch (error) {
+                console.error("Error saving booking:", error);
+                alert('Failed to save booking. Check the server connection and ensure all required fields are filled.');
+            }
+        }
+
+        async function saveDoula(e) {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+            const doula = {
+                name: formData.get('name'),
+                phone: formData.get('phone'),
+                email: formData.get('email'),
+                address: formData.get('address'),
+                servicesOffered: formData.get('servicesOffered')
+            };
+            
+            try {
+                if (editingId) {
+                    doula.id = editingId;
+                    const idx = doulas.findIndex(d => d.id === editingId);
+                    if(idx !== -1) doulas[idx] = { ...doulas[idx], ...doula };
+                    await apiPut(`/api/doulas/${editingId}`, doula);
+                } else {
+                    const created = await apiPost('/api/doulas', doula);
+                    doulas.push(created);
+                }
+                renderDoulas();
+                updateDoulaDropdowns(); // Update doula dropdowns across the app
+                closeModal('doulaModal');
+            } catch (error) {
+                console.error("Error saving doula:", error);
+                alert('Failed to save doula. Check the server connection and ensure all required fields are filled.');
+            }
+        }
+
+        async function saveService(e) {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+            const service = {
+                serviceName: formData.get('serviceName'),
+                clientPrice: Number(formData.get('clientPrice')),
+                doulaPayout: Number(formData.get('doulaPayout')),
+                agencyProfit: Number(formData.get('agencyProfit'))
+            };
+            
+            try {
+                if (editingId) {
+                    service.id = editingId;
+                    const idx = services.findIndex(s => s.id === editingId);
+                    if(idx !== -1) services[idx] = { ...services[idx], ...service };
+                    await apiPut(`/api/services/${editingId}`, service);
+                } else {
+                    const created = await apiPost('/api/services', service);
+                    services.push(created);
+                }
+                renderServices();
+                // We should also update booking service checkboxes and paycheck service dropdowns
+                renderBookingServicesCheckboxes(); 
+                updatePaycheckServiceDropdowns();
+                closeModal('serviceModal');
+            } catch (error) {
+                console.error("Error saving service:", error);
+                alert('Failed to save service. Check the server connection and ensure all required fields are filled.');
+            }
+        }
+        
+        async function savePaycheck(e) {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+            
+            // Re-calculate totals based on current form state before saving
+            let subtotal = 0;
+            const serviceDetails = [];
+            const lines = document.getElementById('paycheckServicesContainer').querySelectorAll('.service-line-item');
+
+            lines.forEach(line => {
+                const serviceId = line.querySelector('.paycheck-service').value;
+                const quantity = Number(line.querySelector('.paycheck-quantity').value);
+                const service = services.find(s => s.id == serviceId);
+                
+                if (service && quantity > 0) {
+                    const amount = service.doulaPayout * quantity;
+                    serviceDetails.push({ name: service.serviceName, quantity: quantity, amount: amount });
+                    subtotal += amount;
+                }
+            });
+
+            // Basic validation
+            if (serviceDetails.length === 0) {
+                 alert("Please add at least one service line item.");
+                 return;
+            }
+
+            const hst = +(subtotal * 0.13).toFixed(2);
+
+            const paycheck = {
+                doula: formData.get('doula'),
+                weekNumber: formData.get('weekNumber'),
+                invoiceDate: formData.get('invoiceDate'),
+                serviceDetails: serviceDetails, // Array of service objects with name, quantity, amount
+                subtotal: +subtotal.toFixed(2),
+                hst: hst,
+                total: +(subtotal + hst).toFixed(2)
+            };
+            
+            // FIX 2: Added try...catch block to handle API errors and provide user feedback
+            try {
+                if (editingId) {
+                    paycheck.id = editingId;
+                    const idx = paychecks.findIndex(p => p.id === editingId);
+                    if(idx !== -1) paychecks[idx] = { ...paychecks[idx], ...paycheck };
+                    await apiPut(`/api/paychecks/${editingId}`, paycheck);
+                } else {
+                    const created = await apiPost('/api/paychecks', paycheck);
+                    paychecks.push(created);
+                }
+                renderPaychecks();
+                updatePaycheckWeekFilter();
+                closeModal('paycheckModal');
+                renderSummary(); // Update reports after adding a paycheck
+            } catch (error) {
+                console.error("Error saving paycheck:", error);
+                alert('Failed to save paycheck. Check the server connection and ensure all required fields are filled.');
+            }
+        }
+
+        // MODIFIED: Logic simplified, relies on openModal to set title
+        function editBooking(id) {
+            closeModal('detailsModal'); // Close details if open
+            const booking = bookings.find(b => b.id === id);
+            if (!booking) return;
+
+            editingId = id; // Crucial: set editingId before opening the modal
+            const form = document.getElementById('bookingForm');
+            
+            form.elements.clientName.value = booking.clientName || '';
+            form.elements.dueDate.value = booking.dueDate || '';
+            form.elements.phone.value = booking.phone || '';
+            form.elements.email.value = booking.email || '';
+            form.elements.assignedDoula.value = booking.assignedDoula || '';
+            form.elements.status.value = booking.status || 'Current';
+            form.elements.paid.value = booking.paid || 'No';
+
+            // Handle services checkboxes
+            const selectedServices = (booking.services || '').split(', ').filter(Boolean);
+            document.querySelectorAll('#bookingServicesContainer input[type="checkbox"]').forEach(cb => {
+                // Remove the checked state first
+                cb.checked = false; 
+                // Then set checked state if service is in the list
+                if (selectedServices.includes(cb.name)) {
+                    cb.checked = true;
+                }
+            });
+
+            openModal('bookingModal');
+        }
+
+        function editDoula(id) {
+            closeModal('detailsModal');
+            const doula = doulas.find(d => d.id === id);
+            if (!doula) return;
+
+            editingId = id;
+            const form = document.getElementById('doulaForm');
+            form.elements.name.value = doula.name || '';
+            form.elements.phone.value = doula.phone || '';
+            form.elements.email.value = doula.email || '';
+            form.elements.address.value = doula.address || '';
+            form.elements.servicesOffered.value = doula.servicesOffered || '';
+
+            openModal('doulaModal');
+        }
+
+        async function deleteItem(type, id) {
+            if (!confirm('Are you sure you want to delete this item?')) return;
+            
+            try {
+                await apiDelete(`/api/${type}s/${id}`);
+                
+                // Remove from local array
+                if (type === 'booking') {
+                    bookings = bookings.filter(b => b.id !== id);
+                    renderBookings();
+                } else if (type === 'doula') {
+                    doulas = doulas.filter(d => d.id !== id);
+                    renderDoulas();
+                    updateDoulaDropdowns(); // Update dropdowns after delete
+                } else if (type === 'service') {
+                    services = services.filter(s => s.id !== id);
+                    renderServices();
+                    renderBookingServicesCheckboxes(); // Re-render service options
+                    updatePaycheckServiceDropdowns();
+                } else if (type === 'paycheck') {
+                    paychecks = paychecks.filter(p => p.id !== id);
+                    renderPaychecks();
+                    updatePaycheckWeekFilter();
+                    renderSummary(); // Update reports after delete
+                }
+                
+                closeModal('detailsModal'); // Close any details modal that might be open
+                alert(`${type.charAt(0).toUpperCase() + type.slice(1)} deleted successfully.`);
+            } catch (error) {
+                console.error(`Error deleting ${type}:`, error);
+                alert(`Failed to delete ${type}. Check the server connection.`);
+            }
+        }
+        
+        // --- MODAL / HELPER FUNCTIONS ---
+
+        function renderBookingServicesCheckboxes(selectedServiceNames = []) {
+            const container = document.getElementById('bookingServicesContainer');
+            if (!container) return;
+            
+            container.innerHTML = services.map(s => {
+                // If editingId is set, get the existing service string from the booking being edited
+                const isSelected = selectedServiceNames.includes(s.serviceName);
+
+                // Use the service ID as the value for ease of lookup during save
+                return `
+                    <label>
+                        <input type="checkbox" name="${escapeHtml(s.serviceName)}" value="${s.id}" ${isSelected ? 'checked' : ''}>
+                        <span>${escapeHtml(s.serviceName)}</span>
+                    </label>
+                `;
+            }).join('');
+        }
+
+        function updatePaycheckServiceDropdowns() {
+            const serviceOptions = services.map(s => 
+                `<option value="${s.id}">${escapeHtml(s.serviceName)} - $${Number(s.doulaPayout).toFixed(2)} p/u</option>`
+            ).join('');
+
+            // Only update the template, the current modal needs to be closed/reopened or manually updated
+            // Since this function is mostly for saveService, we just make sure the new service is available next time.
+        }
+
+        // MODIFIED: Logic updated to only reset form if not editing, and set title dynamically
+        function openModal(modalId) {
+            document.getElementById(modalId).classList.add('active'); 
+            
+            // Clear forms ONLY if we are NOT in an edit flow (editingId is null)
+            if (editingId === null) {
+                const form = document.querySelector(`#${modalId} form`);
+                if(form) form.reset();
+            }
+
+            if (modalId === 'bookingModal') {
+                document.getElementById('bookingModalTitle').textContent = editingId ? 'Edit Booking' : 'New Booking';
+                
+                // For a new booking, render all checkboxes unchecked.
+                const selectedServiceNames = editingId 
+                    ? (bookings.find(b => b.id === editingId)?.services || '').split(', ').filter(Boolean)
+                    : [];
+
+                renderBookingServicesCheckboxes(selectedServiceNames);
+
+            } else if (modalId === 'doulaModal') {
+                document.getElementById('doulaModalTitle').textContent = editingId ? 'Edit Doula' : 'Add Doula';
+            } else if (modalId === 'serviceModal') {
+                document.getElementById('serviceModalTitle').textContent = editingId ? 'Edit Service' : 'Add Service';
+            } else if (modalId === 'paycheckModal') {
+                document.getElementById('paycheckModalTitle').textContent = editingId ? 'Edit Paycheck' : 'Generate Paycheck';
+                
+                // Only clear and add line for *new* paycheck
+                if(editingId === null) {
+                    document.getElementById('paycheckServicesContainer').innerHTML = '';
+                    addPaycheckServiceLine();
+                    calculatePaycheckTotals(); // Recalculate for the single default line
+                } 
+                // If editing, logic is handled in editPaycheck, which calls calculatePaycheckTotals()
+            }
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.remove('active');
+            editingId = null;
+        }
+
+        // NEW: Function to show the main app
+        function showMainApp() {
+            document.getElementById('loginModal').classList.remove('active');
+            document.getElementById('mainAppContainer').style.display = 'block';
+            initApp(); // Load data once logged in
+        }
+        
+        // --- DROPDOWN POPULATION ---
+
+        function updateDoulaDropdowns() {
+            const selects = [document.getElementById('assignedDoula'), document.getElementById('paycheckDoula'), document.getElementById('paycheckDoulaFilter')];
+            selects.forEach(select => {
+                if (!select) return;
+                const currentValue = select.value;
+                
+                // Filter dropdowns to only include an "All Doulas" option for the filter
+                if (select.id === 'paycheckDoulaFilter') {
+                     select.innerHTML = '<option value="">All Doulas</option>' + 
+                        doulas.map(d => `<option value="${escapeHtml(d.name)}">${escapeHtml(d.name)}</option>`).join('');
+                } else {
+                     select.innerHTML = '<option value="">Select Doula</option>' + 
+                        doulas.map(d => `<option value="${escapeHtml(d.name)}">${escapeHtml(d.name)}</option>`).join('');
+                }
+                
+                select.value = currentValue;
+            });
+        }
+        
+        // --- INIT APP FUNCTION ---
+        async function initApp() {
+            try {
+                const all = await apiGet('/api/all');
+                bookings = all.bookings || [];
+                doulas = all.doulas || [];
+                services = all.services || [];
+                paychecks = all.paychecks || [];
+
+                renderBookings();
+                renderDoulas();
+                renderServices();
+                renderPaychecks();
+                updatePaycheckWeekFilter();
+                updateDoulaDropdowns();
+                renderSummary(); // Initial load of reports
+            } catch (err) {
+                console.error('Load failed', err);
+                alert('Could not load data. Check server.');
+            }
+        }
+
+        // --- INITIAL PAGE LOAD CHECK ---
+        window.addEventListener('load', () => {
+            if (localStorage.getItem(AUTH_KEY) === 'true') {
+                // If auth key exists, show the main app immediately
+                showMainApp();
+            } else {
+                // Otherwise, the login modal is active by default in HTML
+            }
         });
-        subtotal += lineTotal;
-      }
-    }
-  });
-  
-  const hst = +(subtotal * 0.13).toFixed(2);
-  const paycheck = {
-    doula: formData.get('doula'),
-    weekNumber: formData.get('weekNumber'),
-    invoiceDate: formData.get('invoiceDate'),
-    serviceDetails: serviceDetails,
-    subtotal: +subtotal.toFixed(2),
-    hst: hst,
-    total: +(subtotal + hst).toFixed(2)
-  };
-  
-  if (editingId) {
-    paycheck.id = editingId;
-    const idx = paychecks.findIndex(p => p.id === editingId);
-    if(idx !== -1) paychecks[idx] = { ...paychecks[idx], ...paycheck };
-    await apiPut(`/api/paychecks/${editingId}`, paycheck);
-  } else {
-    const created = await apiPost('/api/paychecks', paycheck);
-    paychecks.push(created);
-  }
-  
-  renderPaychecks();
-  updatePaycheckWeekFilter();
-  closeModal('paycheckModal');
-}
 
-// MODIFIED: Logic simplified, relies on openModal to set title
-function editBooking(id) {
-  closeModal('detailsModal'); // Close details if open
-  const booking = bookings.find(b => b.id === id);
-  if (!booking) return;
-  editingId = id; // Crucial: set editingId before opening the modal
-  
-  const form = document.getElementById('bookingForm');
-  form.elements.clientName.value = booking.clientName || '';
-  form.elements.dueDate.value = booking.dueDate || ''; 
-  form.elements.phone.value = booking.phone || '';
-  form.elements.email.value = booking.email || '';
-  form.elements.assignedDoula.value = booking.assignedDoula || '';
-  form.elements.status.value = booking.status || '';
-  form.elements.paid.value = booking.paid || '';
-  
-  // Call openModal *after* setting the form values (this runs renderBookingServicesCheckboxes)
-  openModal('bookingModal');
-  
-  // Check checkboxes (must be done after renderBookingServicesCheckboxes inside openModal)
-  const serviceNames = (booking.services || '').split(', ').map(s => s.trim());
-  serviceNames.forEach(name => {
-    const service = services.find(s => s.serviceName === name);
-    if (service) {
-      const checkbox = document.getElementById(`service_${service.id}`);
-      if (checkbox) checkbox.checked = true;
-    }
-  });
-}
-
-// MODIFIED: Logic simplified, relies on openModal to set title
-function editDoula(id) {
-  closeModal('detailsModal');
-  const doula = doulas.find(d => d.id === id);
-  if (!doula) return;
-  editingId = id;
-  
-  const form = document.getElementById('doulaForm');
-  form.elements.name.value = doula.name || '';
-  form.elements.phone.value = doula.phone || '';
-  form.elements.email.value = doula.email || '';
-  form.elements.address.value = doula.address || '';
-  form.elements.servicesOffered.value = doula.servicesOffered || '';
-  openModal('doulaModal');
-}
-
-// MODIFIED: Logic simplified, relies on openModal to set title
-function editService(id) {
-  const service = services.find(s => s.id === id);
-  if (!service) return;
-  editingId = id;
-  
-  const form = document.getElementById('serviceForm');
-  form.elements.serviceName.value = service.serviceName || '';
-  form.elements.clientPrice.value = service.clientPrice || '';
-  form.elements.doulaPayout.value = service.doulaPayout || '';
-  openModal('serviceModal');
-}
-
-// MODIFIED: Logic simplified, relies on openModal to set title
-function editPaycheck(id) {
-  const paycheck = paychecks.find(p => p.id === id);
-  if (!paycheck) return;
-  editingId = id;
-  
-  const form = document.getElementById('paycheckForm');
-  form.elements.doula.value = paycheck.doula || '';
-  form.elements.weekNumber.value = paycheck.weekNumber || '';
-  form.elements.invoiceDate.value = paycheck.invoiceDate || '';
-  
-  const container = document.getElementById('paycheckServicesContainer');
-  container.innerHTML = '';
-  
-  if (paycheck.serviceDetails && paycheck.serviceDetails.length > 0) {
-    paycheck.serviceDetails.forEach(detail => {
-      addPaycheckServiceLine();
-      const lines = container.querySelectorAll('.service-line-item');
-      const lastLine = lines[lines.length - 1];
-      const service = services.find(s => s.serviceName === detail.name);
-      if (service) {
-        lastLine.querySelector('.paycheck-service').value = service.id;
-        lastLine.querySelector('.paycheck-quantity').value = detail.quantity;
-      }
-    });
-  } else {
-    addPaycheckServiceLine();
-  }
-  openModal('paycheckModal');
-}
-
-async function deleteItem(type, id) {
-  if (!confirm('Are you sure you want to delete this item?')) return;
-  await apiDelete(`/api/${type}s/${id}`);
-  
-  // Update local state
-  if (type === 'booking') bookings = bookings.filter(b => b.id !== id);
-  if (type === 'doula') doulas = doulas.filter(d => d.id !== id);
-  if (type === 'service') services = services.filter(s => s.id !== id);
-  if (type === 'paycheck') paychecks = paychecks.filter(p => p.id !== id);
-  
-  closeModal('detailsModal'); // Just in case it was triggered from details
-  
-  // Re-render
-  renderBookings();
-  renderDoulas();
-  renderServices();
-  renderPaychecks();
-  updatePaycheckWeekFilter();
-}
-
-
-// --- HELPERS FOR FORMS ---
-function renderBookingServicesCheckboxes() {
-  const container = document.getElementById('bookingServicesContainer');
-  
-  container.innerHTML = services.map(s => `
-    <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 5px;">
-      <input type="checkbox" id="service_${s.id}" value="${s.id}" style="width: 18px; height: 18px; margin: 0; flex-shrink: 0;">
-      <label for="service_${s.id}" style="cursor: pointer; color: var(--text); margin: 0;">
-        ${escapeHtml(s.serviceName)}
-      </label>
-    </div>
-  `).join('');
-}
-
-
-function addPaycheckServiceLine() {
-  const container = document.getElementById('paycheckServicesContainer');
-  const serviceOptions = services.map(s => 
-    `<option value="${s.id}">${escapeHtml(s.serviceName)} ($${Number(s.doulaPayout).toFixed(2)})</option>`
-  ).join('');
-  
-  const line = document.createElement('div');
-  line.className = 'service-line-item';
-  line.style.display = 'flex';
-  line.style.gap = '10px';
-  line.style.marginBottom = '10px';
-  line.innerHTML = `
-    <div class="form-group" style="margin: 0; flex:2;">
-      <select class="paycheck-service" required style="width:100%;">
-        <option value="">Select Service</option>
-        ${serviceOptions}
-      </select>
-    </div>
-    <div class="form-group" style="margin: 0; flex:1;">
-      <input type="number" class="paycheck-quantity" min="1" value="1" required style="width:100%;">
-    </div>
-    <button type="button" class="btn btn-small btn-remove-line" onclick="this.parentElement.remove()">X</button>
-  `;
-  container.appendChild(line);
-}
-
-function updateDoulaDropdowns() {
-  const selects = [document.getElementById('assignedDoula'), document.getElementById('paycheckDoula')];
-  selects.forEach(select => {
-    if (!select) return;
-    const currentValue = select.value;
-    select.innerHTML = '<option value="">Select Doula</option>' + 
-      doulas.map(d => `<option value="${escapeHtml(d.name)}">${escapeHtml(d.name)}</option>`).join('');
-    select.value = currentValue;
-  });
-}
-
-// --- INIT APP FUNCTION ---
-async function initApp() {
-  try {
-    const all = await apiGet('/api/all');
-    bookings = all.bookings || [];
-    doulas = all.doulas || [];
-    services = all.services || [];
-    paychecks = all.paychecks || [];
-
-    renderBookings();
-    renderDoulas();
-    renderServices();
-    renderPaychecks();
-    updatePaycheckWeekFilter();
-    updateDoulaDropdowns();
-  } catch (err) {
-    console.error('Load failed', err);
-    alert('Could not load data. Check server.');
-  }
-}
-
-// --- INITIAL PAGE LOAD CHECK ---
-window.addEventListener('load', () => {
-    if (localStorage.getItem(AUTH_KEY) === 'true') {
-        // If auth key exists, show the main app immediately
-        showMainApp();
-    } else {
-        // Otherwise, the login modal is active by default in HTML
-        // Ensure the main container is hidden
-        document.getElementById('mainAppContainer').style.display = 'none';
-        document.getElementById('loginModal').classList.add('active');
-    }
-});
-</script>
+    </script>
 </body>
 </html>
