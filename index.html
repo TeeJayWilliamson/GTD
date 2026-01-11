@@ -27,12 +27,11 @@
         }
 
         .container {
-            max-width: 1000px;
+            max-width: 1200px;
             margin: 0 auto;
             padding: 20px;
         }
 
-        /* --- Header --- */
         header {
             text-align: center;
             margin-bottom: 30px;
@@ -42,7 +41,6 @@
         h1 { color: var(--primary); font-weight: 300; letter-spacing: 1px; margin-bottom: 5px;}
         .tagline { color: #666; font-size: 0.9em; text-transform: uppercase; letter-spacing: 2px; }
 
-        /* --- Navigation --- */
         .nav-tabs {
             display: flex;
             justify-content: center;
@@ -68,14 +66,13 @@
             box-shadow: 0 4px 6px rgba(139, 115, 85, 0.2);
         }
 
-        /* --- Tab Content --- */
         .tab-content { display: none; animation: fadeIn 0.3s ease-in-out; }
         .tab-content.active { display: block; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
 
         h2 { color: var(--primary); font-weight: 300; margin-bottom: 20px; }
+        h3 { color: var(--primary); font-weight: 400; margin-bottom: 15px; font-size: 1.1em; }
 
-        /* --- Controls --- */
         .controls-bar {
             display: flex;
             justify-content: space-between;
@@ -93,7 +90,6 @@
         }
         .search-input { width: 100%; max-width: 300px; }
 
-        /* --- List Views (Bookings & Doulas) --- */
         .list-container {
             display: flex;
             flex-direction: column;
@@ -122,7 +118,6 @@
         }
         .list-item-icon { color: var(--secondary); font-size: 1.2em; }
 
-        /* --- Tables (Services & Paychecks) --- */
         table {
             width: 100%;
             border-collapse: separate;
@@ -146,13 +141,11 @@
         td:first-child { border-left: 1px solid var(--gray-light); border-top-left-radius: 8px; border-bottom-left-radius: 8px; font-weight: 500; color: var(--primary); }
         td:last-child { border-right: 1px solid var(--gray-light); border-top-right-radius: 8px; border-bottom-right-radius: 8px; }
 
-        /* Paycheck Service styling */
         .paycheck-service-list { list-style: none; font-size: 0.9em; }
         .paycheck-service-row { display: flex; justify-content: space-between; padding: 2px 0; border-bottom: 1px dashed #eee; }
         .paycheck-service-row:last-child { border-bottom: none; }
         .paycheck-amount { font-weight: 600; color: #666; margin-left: 10px; }
 
-        /* --- Buttons --- */
         .btn {
             background: var(--primary); color: white; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; font-size: 0.95em; transition: background 0.2s;
         }
@@ -165,7 +158,6 @@
         .btn-add-line { background: var(--secondary); margin-top: 10px; width: 100%; }
         .btn-remove-line { background: var(--danger); padding: 5px 10px; margin-left: 10px; }
 
-        /* --- Modals --- */
         .modal {
             display: none; position: fixed; z-index: 1000; left: 0; top: 0;
             width: 100%; height: 100%; background-color: rgba(0,0,0,0.5);
@@ -174,50 +166,44 @@
         .modal.active { display: flex; }
         .modal-content {
             background-color: #fefefe; padding: 30px; border-radius: 12px;
-            width: 95%; max-width: 600px; max-height: 90vh; overflow-y: auto;
+            width: 95%; max-width: 800px; max-height: 90vh; overflow-y: auto;
             box-shadow: 0 10px 25px rgba(0,0,0,0.1);
         }
         .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid var(--gray-light); padding-bottom: 15px; }
         .modal-header h2 { margin: 0; }
         .close-btn { font-size: 2rem; cursor: pointer; border: none; background: none; color: #999; line-height: 1; }
         
-        /* Details View in Modal */
         .detail-row { display: flex; margin-bottom: 15px; border-bottom: 1px solid #f5f5f5; padding-bottom: 10px; }
-        .detail-label { width: 120px; font-weight: 600; color: #888; flex-shrink: 0; }
+        .detail-label { width: 180px; font-weight: 600; color: #888; flex-shrink: 0; }
         .detail-value { color: #333; flex-grow: 1; }
         .detail-actions { margin-top: 30px; padding-top: 20px; border-top: 1px solid var(--gray-light); text-align: right; }
 
-        /* Forms */
         .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-bottom: 20px;}
         .form-group { display: flex; flex-direction: column; }
         label { margin-bottom: 5px; font-size: 0.9em; color: #666; }
         input, select, textarea { padding: 12px; border: 1px solid var(--gray-light); border-radius: 6px; font-size: 1em; background: #fafafa; width: 100%; }
         
-#bookingServicesContainer label {
-    display: flex;
-    align-items: center; /* vertically center */
-    gap: 8px;
-    margin-bottom: 0;
-}
+        #bookingServicesContainer label, #bookingDoulasContainer label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 0;
+        }
 
-/* Nudge the text slightly up */
-#bookingServicesContainer label span {
-    display: inline-block;
-    transform: translateY(-1px); /* adjust as needed, -1px or -2px */
-}
+        #bookingServicesContainer label span, #bookingDoulasContainer label span {
+            display: inline-block;
+            transform: translateY(-1px);
+        }
 
-/* Make sure checkbox itself is consistent size */
-#bookingServicesContainer input[type="checkbox"],
-#bookingServicesContainer input[type="radio"] {
-    width: 18px;
-    height: 18px;
-    margin: 0;
-    flex-shrink: 0;
-}
+        #bookingServicesContainer input[type="checkbox"],
+        #bookingServicesContainer input[type="radio"],
+        #bookingDoulasContainer input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            margin: 0;
+            flex-shrink: 0;
+        }
 
-
-
-        /* Login Form Styles - Ensure this modal is always active on load until login */
         .login-form-container {
             padding: 30px;
             background: var(--white);
@@ -246,68 +232,24 @@
             margin-top: 15px;
         }
 
-.action-btns {
-  display: flex;
-  gap: 10px;
-  justify-content: flex-start;
-  flex-wrap: nowrap;
-  align-items: center;
-  width: fit-content;
-  max-width: 200px;
-}
-
-/* Ensure the actions column doesn't stretch */
-#paychecksTable td.action-btns {
-  width: auto;
-  min-width: 180px;
-  padding: 15px;
-}
-
-/* Ensure all table cells have consistent padding and borders */
-#paychecksTable td {
-  padding: 15px;
-  border-bottom: 1px solid #e0e0e0;
-  vertical-align: middle;
-}
-
-#paychecksTable tr {
-  border-bottom: 1px solid #e0e0e0;
-}
-
-/* Remove double borders */
-#paychecksTable tr:last-child td {
-  border-bottom: none;
-}
-
-.action-btns .btn {
-  margin: 0;
-  white-space: nowrap;
-}
-
-.modal-actions {
-  display: flex;
-  gap: 12px;
-  justify-content: flex-end;
-  margin-top: 30px;
-  flex-wrap: wrap;
-}
-        
-        /* Mobile Responsive */
-        @media (max-width: 768px) {
-            .controls-bar { flex-direction: column-reverse; align-items: stretch; }
-            table, thead, tbody, th, td, tr { display: block; }
-            thead tr { position: absolute; top: -9999px; left: -9999px; }
-            tr { margin-bottom: 15px; border: 1px solid var(--gray-light); border-radius: 8px; padding: 10px; }
-            td { border: none; padding: 8px 5px; display: flex; justify-content: space-between; text-align: right; }
-            td::before { content: attr(data-label) ":"; font-weight: bold; text-transform: uppercase; margin-right: 10px; color: #777; flex-shrink: 0; }
-            td:first-child, td:last-child { border-radius: 0; }
-            .action-btns { justify-content: flex-end; width: 100%; }
-        }
-        @media (max-width: 500px) {
-             .form-grid { grid-template-columns: 1fr; }
+        .action-btns {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-start;
+            flex-wrap: nowrap;
+            align-items: center;
+            width: fit-content;
+            max-width: 200px;
         }
 
-        /* Summary Report Styles */
+        .modal-actions {
+            display: flex;
+            gap: 12px;
+            justify-content: flex-end;
+            margin-top: 30px;
+            flex-wrap: wrap;
+        }
+
         .stat-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -332,6 +274,113 @@
             font-size: 2em;
             font-weight: 300;
             color: var(--primary);
+        }
+
+        .checkbox-label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 10px;
+        }
+
+        .checkbox-label input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+        }
+
+        .service-hours-input {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            margin-top: 5px;
+        }
+
+        .service-hours-input input {
+            width: 80px;
+        }
+
+        .booking-selection-list {
+            max-height: 400px;
+            overflow-y: auto;
+            border: 1px solid var(--gray-light);
+            border-radius: 6px;
+            padding: 15px;
+            background: #fafafa;
+        }
+
+        .booking-item {
+            padding: 10px;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .booking-item:last-child {
+            border-bottom: none;
+        }
+
+        .booking-item input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+        }
+
+        .booking-item-details {
+            flex: 1;
+        }
+
+        .booking-service-item {
+            margin-left: 30px;
+            padding: 8px;
+            background: #fff;
+            border-left: 2px solid var(--secondary);
+            margin-top: 5px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .booking-service-item input[type="checkbox"] {
+            width: 16px;
+            height: 16px;
+        }
+
+        .booking-service-hours {
+            width: 80px;
+            padding: 4px;
+            font-size: 0.9em;
+        }
+
+        .toggle-switch {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .toggle-switch input[type="checkbox"] {
+            width: auto;
+            height: auto;
+        }
+
+        .paycheck-summary {
+            background: #f9f9f9;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 20px;
+        }
+
+        @media (max-width: 768px) {
+            .controls-bar { flex-direction: column-reverse; align-items: stretch; }
+            table, thead, tbody, th, td, tr { display: block; }
+            thead tr { position: absolute; top: -9999px; left: -9999px; }
+            tr { margin-bottom: 15px; border: 1px solid var(--gray-light); border-radius: 8px; padding: 10px; }
+            td { border: none; padding: 8px 5px; display: flex; justify-content: space-between; text-align: right; }
+            td::before { content: attr(data-label) ":"; font-weight: bold; text-transform: uppercase; margin-right: 10px; color: #777; flex-shrink: 0; }
+            td:first-child, td:last-child { border-radius: 0; }
+            .action-btns { justify-content: flex-end; width: 100%; }
+        }
+        @media (max-width: 500px) {
+             .form-grid { grid-template-columns: 1fr; }
         }
     </style>
 </head>
@@ -375,19 +424,23 @@
             <div id="bookingsTab" class="tab-content active">
                 <div class="controls-bar">
                     <button class="btn" onclick="newBooking()">+ Log New Booking</button>
-                    <input type="text" id="bookingSearch" class="search-input" placeholder="Search Bookings by Client/Doula..." onkeyup="renderBookings()">
+                    <input type="text" id="bookingSearch" class="search-input" placeholder="Search Bookings..." onkeyup="renderBookings()">
+                    <select id="bookingStatusFilter" class="filter-select" onchange="renderBookings()">
+                        <option value="">All Statuses</option>
+                        <option value="Pending Start">Pending Start</option>
+                        <option value="Current">Current</option>
+                        <option value="Archive">Archive</option>
+                    </select>
                 </div>
-                <div id="bookingsList" class="list-container">
-                    </div>
+                <div id="bookingsList" class="list-container"></div>
             </div>
 
             <div id="doulasTab" class="tab-content">
                 <div class="controls-bar">
                     <button class="btn" onclick="newDoula()">+ Add New Doula</button>
-                    <input type="text" id="doulaSearch" class="search-input" placeholder="Search Doulas by Name/Service..." onkeyup="renderDoulas()">
+                    <input type="text" id="doulaSearch" class="search-input" placeholder="Search Doulas..." onkeyup="renderDoulas()">
                 </div>
-                <div id="doulasList" class="list-container">
-                    </div>
+                <div id="doulasList" class="list-container"></div>
             </div>
             
             <div id="servicesTab" class="tab-content">
@@ -405,8 +458,7 @@
                             <th>Actions</th>
                         </tr>
                     </thead>
-                    <tbody id="servicesTableBody">
-                        </tbody>
+                    <tbody id="servicesTableBody"></tbody>
                 </table>
             </div>
 
@@ -426,29 +478,36 @@
                             <th>Week</th>
                             <th>Doula</th>
                             <th>Date</th>
+                            <th>Bookings</th>
                             <th>Services</th>
                             <th>Total Payout</th>
                             <th>Actions</th>
                         </tr>
                     </thead>
-                    <tbody id="paychecksTableBody">
-                        </tbody>
+                    <tbody id="paychecksTableBody"></tbody>
                 </table>
+                
+                <div class="paycheck-summary">
+                    <h3>Weekly Summary</h3>
+                    <div id="paycheckWeeklySummary"></div>
+                </div>
             </div>
 
             <div id="summaryTab" class="tab-content">
                 <h2>Summary Report</h2>
-                <div id="summaryStats" class="stat-grid">
-                    </div>
+                <div id="summaryStats" class="stat-grid"></div>
                 <h2>Services Performed This Week</h2>
                 <div class="controls-bar">
                     <input type="week" id="reportWeek" class="filter-select" onchange="renderSummary()">
                 </div>
-                <div id="servicesReportContainer">
-                    </div>
+                <div id="servicesReportContainer"></div>
             </div>
 
-        </div> </div> <div id="bookingModal" class="modal">
+        </div>
+    </div>
+
+    <!-- Booking Modal -->
+    <div id="bookingModal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
                 <h2 id="bookingModalTitle">New Booking</h2>
@@ -460,6 +519,10 @@
                     <div class="form-group">
                         <label>Client Name *</label>
                         <input type="text" name="clientName" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Invoice Number</label>
+                        <input type="text" name="invoiceNumber">
                     </div>
                     <div class="form-group">
                         <label>Due Date</label>
@@ -474,30 +537,29 @@
                         <input type="email" name="email" required>
                     </div>
                     <div class="form-group">
-                        <label>Assigned Doula</label>
-                        <select name="assignedDoula" id="assignedDoula">
-                            <option value="">Select Doula</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label>Status</label>
-                        <select name="status">
+                        <label>Booking Status</label>
+                        <select name="bookingStatus">
+                            <option value="Pending Start">Pending Start</option>
                             <option value="Current">Current</option>
-                            <option value="Completed">Completed</option>
-                            <option value="Archived">Archived</option>
+                            <option value="Archive">Archive</option>
                         </select>
                     </div>
                     <div class="form-group">
-                        <label>Paid</label>
-                        <select name="paid">
-                            <option value="No">No</option>
-                            <option value="Yes">Yes</option>
+                        <label>Payment Status</label>
+                        <select name="paymentStatus">
+                            <option value="Deposit">Deposit</option>
+                            <option value="Paid in Full">Paid in Full</option>
+                            <option value="Up to Date">Up to Date</option>
+                            <option value="Overdue">Overdue</option>
                         </select>
                     </div>
                     <div class="form-group" style="grid-column: 1 / -1;">
+                        <label>Assigned Doula(s) *</label>
+                        <div class="multi-select-checkbox-group" id="bookingDoulasContainer"></div>
+                    </div>
+                    <div class="form-group" style="grid-column: 1 / -1;">
                         <label>Services *</label>
-                        <div class="multi-select-checkbox-group" id="bookingServicesContainer">
-                            </div>
+                        <div class="multi-select-checkbox-group" id="bookingServicesContainer"></div>
                     </div>
                 </div>
                 <div class="modal-actions">
@@ -508,6 +570,7 @@
         </div>
     </div>
 
+    <!-- Doula Modal -->
     <div id="doulaModal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
@@ -530,12 +593,35 @@
                         <input type="email" name="email" required>
                     </div>
                     <div class="form-group">
+                        <label>SIN Number</label>
+                        <input type="text" name="sinNumber">
+                    </div>
+                    <div class="form-group" style="grid-column: 1 / -1;">
                         <label>Address</label>
                         <input type="text" name="address">
                     </div>
                     <div class="form-group" style="grid-column: 1 / -1;">
                         <label>Services Offered (Comma Separated)</label>
                         <textarea name="servicesOffered"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label class="checkbox-label">
+                            <input type="checkbox" name="cprCertified">
+                            <span>CPR Certified</span>
+                        </label>
+                        <input type="date" name="cprExpiry" placeholder="CPR Expiration Date">
+                    </div>
+                    <div class="form-group">
+                        <label class="checkbox-label">
+                            <input type="checkbox" name="policeCheck">
+                            <span>Police Reference Check</span>
+                        </label>
+                    </div>
+                    <div class="form-group">
+                        <label class="checkbox-label">
+                            <input type="checkbox" name="insuranceUpToDate">
+                            <span>Up to Date Insurance</span>
+                        </label>
                     </div>
                 </div>
                 <div class="modal-actions">
@@ -546,6 +632,7 @@
         </div>
     </div>
     
+    <!-- Service Modal -->
     <div id="serviceModal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
@@ -580,6 +667,7 @@
         </div>
     </div>
     
+    <!-- Paycheck Modal -->
     <div id="paycheckModal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
@@ -591,13 +679,13 @@
                 <div class="form-grid" style="grid-template-columns: 1fr 1fr 1fr;">
                     <div class="form-group">
                         <label>Doula *</label>
-                        <select name="doula" id="paycheckDoula" required>
+                        <select name="doula" id="paycheckDoula" required onchange="loadDoulaBookings()">
                             <option value="">Select Doula</option>
                         </select>
                     </div>
                     <div class="form-group">
                         <label>Week Number *</label>
-                        <input type="number" name="weekNumber" min="1" required>
+                        <input type="text" name="weekNumber" placeholder="e.g., 01, 02, 45" required>
                     </div>
                     <div class="form-group">
                         <label>Invoice Date *</label>
@@ -605,17 +693,23 @@
                     </div>
                 </div>
                 
+                <div class="form-group">
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="hstToggle" onchange="calculatePaycheckTotals()">
+                        <span>Include HST (13%)</span>
+                    </label>
+                </div>
+
                 <hr style="margin: 20px 0; border: none; border-top: 1px dashed var(--gray-light);">
-                <h3>Services Breakdown</h3>
+                <h3>Select Bookings & Services to Pay For</h3>
                 
-                <div id="paycheckServicesContainer">
-                    </div>
-                
-                <button type="button" class="btn btn-add-line" onclick="addPaycheckServiceLine()">+ Add Service Line</button>
+                <div id="paycheckBookingsContainer" class="booking-selection-list">
+                    <p style="color: #999; text-align: center;">Select a doula to see their bookings</p>
+                </div>
 
                 <div style="margin-top: 20px; text-align: right; font-size: 1.1em;">
                     <p>Subtotal: <strong id="paycheckSubtotal">$0.00</strong></p>
-                    <p>HST (13%): <strong id="paycheckHst">$0.00</strong></p>
+                    <p id="paycheckHstRow" style="display: none;">HST (13%): <strong id="paycheckHst">$0.00</strong></p>
                     <p style="font-size: 1.4em; font-weight: bold; color: var(--primary);">Total Payout: <strong id="paycheckTotal">$0.00</strong></p>
                 </div>
 
@@ -627,25 +721,23 @@
         </div>
     </div>
     
+    <!-- Details Modal -->
     <div id="detailsModal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
                 <h2 id="detailsModalTitle">Details</h2>
                 <button class="close-btn" onclick="closeModal('detailsModal')">&times;</button>
             </div>
-            <div id="detailsModalBody">
-                </div>
-            <div id="detailsModalActions" class="detail-actions">
-                </div>
+            <div id="detailsModalBody"></div>
+            <div id="detailsModalActions" class="detail-actions"></div>
         </div>
     </div>
 
-
     <script>
-        const API_BASE = 'https://gtd-1rkv.onrender.com'; // Change to '' if hosted on same server
+        const API_BASE = 'https://gtd-1rkv.onrender.com';
         const AUTH_KEY = 'gtd_admin_logged_in';
         const STATIC_USERNAME = 'GTDAdmin';
-        const STATIC_PASSWORD = 'Doula@123'; // NOTE: This is client-side and not secure.
+        const STATIC_PASSWORD = 'Doula@123';
 
         let bookings = [];
         let doulas = [];
@@ -673,6 +765,28 @@
                 .replace(/>/g, "&gt;")
                 .replace(/"/g, "&quot;")
                 .replace(/'/g, "&#039;");
+        }
+
+        function getWeekNumber(date) {
+            const d = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
+            const dayNum = d.getUTCDay() || 7;
+            d.setUTCDate(d.getUTCDate() + 4 - dayNum);
+            const yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1));
+            const weekNo = Math.ceil((((d - yearStart) / 86400000) + 1) / 7);
+            return String(weekNo).padStart(2, '0');
+        }
+
+        function getWeekRange(weekNumber, year) {
+            const simple = new Date(year, 0, 1 + (weekNumber - 1) * 7);
+            const dow = simple.getDay();
+            const ISOweekStart = simple;
+            if (dow <= 4)
+                ISOweekStart.setDate(simple.getDate() - simple.getDay() + 1);
+            else
+                ISOweekStart.setDate(simple.getDate() + 8 - simple.getDay());
+            const ISOweekEnd = new Date(ISOweekStart);
+            ISOweekEnd.setDate(ISOweekStart.getDate() + 6);
+            return { start: ISOweekStart, end: ISOweekEnd };
         }
         
         // --- API HELPERS ---
@@ -725,36 +839,38 @@
 
         // --- TAB SWITCHING ---
 
-        // Function to switch tabs
         function switchTab(tabId, event) {
-            // Deactivate all tabs
             document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
             document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
 
-            // Activate selected tab and content
             document.querySelector(`.tab-btn[onclick*="${tabId}"]`).classList.add('active');
             document.getElementById(tabId + 'Tab').classList.add('active');
             
-            // FIX 1: Scroll to the top of the page when switching tabs.
-            // This prevents the page from anchoring below the navigation bar.
             window.scrollTo(0, 0); 
         }
 
-        // --- BOOKINGS (List View + Details Modal) ---
+        // --- BOOKINGS ---
 
         function renderBookings() {
             const container = document.getElementById('bookingsList');
             const searchTerm = document.getElementById('bookingSearch').value.toLowerCase();
+            const statusFilter = document.getElementById('bookingStatusFilter').value;
             
-            const filteredBookings = bookings.filter(b => 
-                (b.clientName && b.clientName.toLowerCase().includes(searchTerm)) ||
-                (b.assignedDoula && b.assignedDoula.toLowerCase().includes(searchTerm))
-            );
+            const filteredBookings = bookings.filter(b => {
+                const matchesSearch = 
+                    (b.clientName && b.clientName.toLowerCase().includes(searchTerm)) ||
+                    (b.assignedDoulas && b.assignedDoulas.toLowerCase().includes(searchTerm)) ||
+                    (b.invoiceNumber && b.invoiceNumber.toLowerCase().includes(searchTerm));
+                
+                const matchesStatus = !statusFilter || b.bookingStatus === statusFilter;
+                
+                return matchesSearch && matchesStatus;
+            });
 
             container.innerHTML = filteredBookings.map(b => `
                 <div class="list-item" onclick="showBookingDetails(${b.id})">
-                    <div class="list-item-name">${escapeHtml(b.clientName)} - ${escapeHtml(b.assignedDoula || 'Unassigned')}</div>
-                    <div class="list-item-icon">${escapeHtml(b.status)}</div>
+                    <div class="list-item-name">${escapeHtml(b.clientName)} - ${escapeHtml(b.assignedDoulas || 'Unassigned')}</div>
+                    <div class="list-item-icon">${escapeHtml(b.bookingStatus || 'Current')}</div>
                 </div>
             `).join('');
         }
@@ -774,15 +890,22 @@
             const actions = document.getElementById('detailsModalActions');
 
             const b = booking;
+            
+            const servicesDisplay = (b.serviceDetails || []).map(sd => 
+                `${escapeHtml(sd.name)}${sd.hours ? ` (${sd.hours} hrs)` : ''}`
+            ).join(', ') || escapeHtml(b.services || 'None');
+
             body.innerHTML = `
                 <div class="detail-row"><span class="detail-label">Client Name:</span><span class="detail-value">${escapeHtml(b.clientName)}</span></div>
+                <div class="detail-row"><span class="detail-label">Invoice Number:</span><span class="detail-value">${escapeHtml(b.invoiceNumber || 'N/A')}</span></div>
                 <div class="detail-row"><span class="detail-label">Due Date:</span><span class="detail-value">${escapeHtml(b.dueDate || 'N/A')}</span></div>
                 <div class="detail-row"><span class="detail-label">Phone:</span><span class="detail-value"><a href="tel:${escapeHtml(b.phone)}">${formatPhone(b.phone)}</a></span></div>
                 <div class="detail-row"><span class="detail-label">Email:</span><span class="detail-value"><a href="mailto:${escapeHtml(b.email)}">${escapeHtml(b.email)}</a></span></div>
-                <div class="detail-row"><span class="detail-label">Doula:</span><span class="detail-value">${escapeHtml(b.assignedDoula || 'Unassigned')}</span></div>
-                <div class="detail-row"><span class="detail-label">Status:</span><span class="detail-value">${escapeHtml(b.status)}</span></div>
-                <div class="detail-row"><span class="detail-label">Paid:</span><span class="detail-value">${escapeHtml(b.paid)}</span></div>
-                <div class="detail-row"><span class="detail-label">Services:</span><span class="detail-value">${escapeHtml(b.services)}</span></div>
+                <div class="detail-row"><span class="detail-label">Doula(s):</span><span class="detail-value">${escapeHtml(b.assignedDoulas || 'Unassigned')}</span></div>
+                <div class="detail-row"><span class="detail-label">Booking Status:</span><span class="detail-value">${escapeHtml(b.bookingStatus || 'Current')}</span></div>
+                <div class="detail-row"><span class="detail-label">Payment Status:</span><span class="detail-value">${escapeHtml(b.paymentStatus || 'N/A')}</span></div>
+                <div class="detail-row"><span class="detail-label">Services:</span><span class="detail-value">${servicesDisplay}</span></div>
+                <div class="detail-row"><span class="detail-label">Total Due:</span><span class="detail-value">${calculateBookingTotal(b).toFixed(2)}</span></div>
             `;
             actions.innerHTML = `
                 <button class="btn btn-edit" onclick="editBooking(${b.id})">Edit Booking</button>
@@ -791,7 +914,20 @@
             modal.classList.add('active');
         }
 
-        // --- DOULAS (Card View + Details Modal) ---
+        function calculateBookingTotal(booking) {
+            if (!booking.serviceDetails || booking.serviceDetails.length === 0) return 0;
+            
+            return booking.serviceDetails.reduce((total, sd) => {
+                const service = services.find(s => s.serviceName === sd.name);
+                if (service) {
+                    const hours = sd.hours || 1;
+                    return total + (service.clientPrice * hours);
+                }
+                return total;
+            }, 0);
+        }
+
+        // --- DOULAS ---
 
         function renderDoulas() {
             const container = document.getElementById('doulasList');
@@ -810,7 +946,7 @@
             container.innerHTML = filteredDoulas.map(d => `
                 <div class="list-item" onclick="showDoulaDetails(${d.id})">
                     <div class="list-item-name">${escapeHtml(d.name)}</div>
-                    <div class="list-item-icon">${escapeHtml(d.servicesOffered)}</div>
+                    <div class="list-item-icon">${escapeHtml(d.servicesOffered || 'No services listed')}</div>
                 </div>
             `).join('');
         }
@@ -830,12 +966,28 @@
             const actions = document.getElementById('detailsModalActions');
 
             const d = doula;
+            
+            const currentBookings = bookings.filter(b => 
+                b.assignedDoulas && b.assignedDoulas.includes(d.name) && b.bookingStatus === 'Current'
+            );
+            
+            const bookingsHtml = currentBookings.length > 0 
+                ? currentBookings.map(b => `<div>${escapeHtml(b.clientName)} (Invoice: ${escapeHtml(b.invoiceNumber || 'N/A')})</div>`).join('')
+                : '<div style="color: #999;">No current bookings</div>';
+
+            const cprStatus = d.cprCertified ? 'Yes' + (d.cprExpiry ? ` (Expires: ${d.cprExpiry})` : '') : 'No';
+
             body.innerHTML = `
                 <div class="detail-row"><span class="detail-label">Name:</span><span class="detail-value">${escapeHtml(d.name)}</span></div>
                 <div class="detail-row"><span class="detail-label">Phone:</span><span class="detail-value"><a href="tel:${escapeHtml(d.phone)}">${formatPhone(d.phone)}</a></span></div>
                 <div class="detail-row"><span class="detail-label">Email:</span><span class="detail-value"><a href="mailto:${escapeHtml(d.email)}">${escapeHtml(d.email)}</a></span></div>
+                <div class="detail-row"><span class="detail-label">SIN Number:</span><span class="detail-value">${escapeHtml(d.sinNumber || 'N/A')}</span></div>
                 <div class="detail-row"><span class="detail-label">Address:</span><span class="detail-value">${escapeHtml(d.address || 'N/A')}</span></div>
                 <div class="detail-row"><span class="detail-label">Services:</span><span class="detail-value">${escapeHtml(d.servicesOffered || 'None listed')}</span></div>
+                <div class="detail-row"><span class="detail-label">CPR Certified:</span><span class="detail-value">${cprStatus}</span></div>
+                <div class="detail-row"><span class="detail-label">Police Check:</span><span class="detail-value">${d.policeCheck ? 'Yes' : 'No'}</span></div>
+                <div class="detail-row"><span class="detail-label">Insurance:</span><span class="detail-value">${d.insuranceUpToDate ? 'Up to Date' : 'Not Current'}</span></div>
+                <div class="detail-row"><span class="detail-label">Current Bookings:</span><span class="detail-value">${bookingsHtml}</span></div>
             `;
             actions.innerHTML = `
                 <button class="btn btn-edit" onclick="editDoula(${d.id})">Edit Doula</button>
@@ -844,7 +996,7 @@
             modal.classList.add('active');
         }
 
-        // --- SERVICES (Table View + Edit Modal) ---
+        // --- SERVICES ---
         
         function renderServices() {
             const container = document.getElementById('servicesTableBody');
@@ -857,9 +1009,9 @@
             container.innerHTML = filteredServices.map(s => `
                 <tr>
                     <td data-label="Service Name">${escapeHtml(s.serviceName)}</td>
-                    <td data-label="Client Price">$${Number(s.clientPrice).toFixed(2)}</td>
-                    <td data-label="Doula Payout">$${Number(s.doulaPayout).toFixed(2)}</td>
-                    <td data-label="Agency Profit">$${Number(s.agencyProfit).toFixed(2)}</td>
+                    <td data-label="Client Price">${Number(s.clientPrice).toFixed(2)}</td>
+                    <td data-label="Doula Payout">${Number(s.doulaPayout).toFixed(2)}</td>
+                    <td data-label="Agency Profit">${Number(s.agencyProfit).toFixed(2)}</td>
                     <td data-label="Actions">
                         <button class="btn btn-small btn-edit" onclick="editService(${s.id})">Edit</button>
                         <button class="btn btn-small btn-danger" onclick="deleteItem('service', ${s.id})">Delete</button>
@@ -887,7 +1039,7 @@
             openModal('serviceModal');
         }
         
-        // --- PAYCHECKS (Table View + Generate Modal) ---
+        // --- PAYCHECKS ---
 
         function renderPaychecks() {
             const container = document.getElementById('paychecksTableBody');
@@ -901,11 +1053,15 @@
             });
             
             container.innerHTML = filteredPaychecks.map(p => {
-                // Improved Service Breakdown Styling
+                const bookingsList = (p.bookingIds || []).map(bid => {
+                    const booking = bookings.find(b => b.id === bid);
+                    return booking ? `${escapeHtml(booking.clientName)} (#${escapeHtml(booking.invoiceNumber || bid)})` : `#${bid}`;
+                }).join(', ') || 'N/A';
+
                 const servicesList = (p.serviceDetails || []).map(sd => `
                     <li class="paycheck-service-row">
-                        <span>${escapeHtml(sd.name)} <small style="color:#999;">x${sd.quantity}</small></span>
-                        <span class="paycheck-amount">$${(sd.amount).toFixed(2)}</span>
+                        <span>${escapeHtml(sd.name)} <small style="color:#999;">x${sd.quantity || 1}${sd.hours ? ` (${sd.hours}hrs)` : ''}</small></span>
+                        <span class="paycheck-amount">${(sd.amount || 0).toFixed(2)}</span>
                     </li>
                 `).join('');
 
@@ -914,32 +1070,171 @@
                         <td data-label="Week">Week ${escapeHtml(p.weekNumber)}</td>
                         <td data-label="Doula" style="font-weight:600; color:var(--primary);">${escapeHtml(p.doula)}</td>
                         <td data-label="Date">${escapeHtml(p.invoiceDate)}</td>
+                        <td data-label="Bookings" style="font-size: 0.9em;">${bookingsList}</td>
                         <td data-label="Services">
                             <ul class="paycheck-service-list">
                                 ${servicesList || '<li style="color:#999;">No services</li>'}
                             </ul>
                         </td>
-                        <td data-label="Total" style="font-weight:bold;">$${Number(p.total).toFixed(2)}</td>
+                        <td data-label="Total" style="font-weight:bold;">${Number(p.total || 0).toFixed(2)}</td>
                         <td class="action-btns">
                             <button class="btn btn-small btn-edit" onclick="editPaycheck(${p.id})">Edit</button>
                             <button class="btn btn-small btn-danger" onclick="deleteItem('paycheck', ${p.id})">Delete</button>
                         </td>
                     </tr>
                 `}).join('');
+
+            renderPaycheckWeeklySummary();
+        }
+
+        function renderPaycheckWeeklySummary() {
+            const container = document.getElementById('paycheckWeeklySummary');
+            const weekFilter = document.getElementById('paycheckWeekFilter').value;
+            
+            if (!weekFilter) {
+                container.innerHTML = '<p style="color: #999;">Select a week to see summary</p>';
+                return;
+            }
+
+            const weekPaychecks = paychecks.filter(p => p.weekNumber === weekFilter);
+            
+            if (weekPaychecks.length === 0) {
+                container.innerHTML = '<p style="color: #999;">No paychecks for this week</p>';
+                return;
+            }
+
+            const totalPayout = weekPaychecks.reduce((sum, p) => sum + Number(p.total || 0), 0);
+            const totalDoulas = new Set(weekPaychecks.map(p => p.doula)).size;
+
+            container.innerHTML = `
+                <div class="stat-grid" style="grid-template-columns: repeat(3, 1fr);">
+                    <div class="stat-card">
+                        <div class="stat-label">Paychecks</div>
+                        <div class="stat-value">${weekPaychecks.length}</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Doulas Paid</div>
+                        <div class="stat-value">${totalDoulas}</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Total Payout</div>
+                        <div class="stat-value">${totalPayout.toFixed(2)}</div>
+                    </div>
+                </div>
+            `;
         }
 
         function updatePaycheckWeekFilter() {
             const select = document.getElementById('paycheckWeekFilter');
-            const weeks = [...new Set(paychecks.map(p => p.weekNumber))].sort((a, b) => Number(b) - Number(a)); // Sort descending
+            const weeks = [...new Set(paychecks.map(p => p.weekNumber))].sort((a, b) => Number(b) - Number(a));
             const current = select.value;
             select.innerHTML = '<option value="">All Weeks</option>' + 
-                weeks.map(w => `<option value="${escapeHtml(w)}">${escapeHtml(w)}</option>`).join('');
+                weeks.map(w => `<option value="${escapeHtml(w)}">Week ${escapeHtml(w)}</option>`).join('');
             select.value = current;
         }
 
         function newPaycheck() {
             editingId = null;
             openModal('paycheckModal');
+        }
+
+        function loadDoulaBookings() {
+            const doulaSelect = document.getElementById('paycheckDoula');
+            const selectedDoula = doulaSelect.value;
+            const container = document.getElementById('paycheckBookingsContainer');
+
+            if (!selectedDoula) {
+                container.innerHTML = '<p style="color: #999; text-align: center;">Select a doula to see their bookings</p>';
+                return;
+            }
+
+            const doulaBookings = bookings.filter(b => 
+                b.assignedDoulas && b.assignedDoulas.includes(selectedDoula)
+            );
+
+            if (doulaBookings.length === 0) {
+                container.innerHTML = '<p style="color: #999; text-align: center;">No bookings found for this doula</p>';
+                return;
+            }
+
+            container.innerHTML = doulaBookings.map(b => {
+                const bookingServicesHtml = (b.serviceDetails || []).map(sd => {
+                    const service = services.find(s => s.serviceName === sd.name);
+                    const isHourly = isHourlyService(sd.name);
+                    const currentHours = sd.hours || 1;
+                    
+                    let hoursInput = '';
+                    if (isHourly) {
+                        hoursInput = `
+                            <label style="margin: 0; font-size: 0.9em;">Hours:</label>
+                            <input type="number" class="booking-service-hours" 
+                                   data-booking="${b.id}" 
+                                   data-service="${escapeHtml(sd.name)}"
+                                   min="0.5" step="0.5" value="${currentHours}"
+                                   onchange="calculatePaycheckTotals()">
+                        `;
+                    }
+
+                    return `
+                        <div class="booking-service-item">
+                            <input type="checkbox" 
+                                   class="service-checkbox" 
+                                   data-booking="${b.id}" 
+                                   data-service="${escapeHtml(sd.name)}"
+                                   data-hourly="${isHourly}"
+                                   onchange="calculatePaycheckTotals()">
+                            <span>${escapeHtml(sd.name)}</span>
+                            ${hoursInput}
+                        </div>
+                    `;
+                }).join('');
+
+                return `
+                    <div class="booking-item" style="flex-direction: column; align-items: flex-start;">
+                        <div style="display: flex; width: 100%; align-items: center; gap: 10px;">
+                            <strong>${escapeHtml(b.clientName)}</strong>
+                            <span style="font-size: 0.9em; color: #666;">
+                                Invoice: ${escapeHtml(b.invoiceNumber || 'N/A')}
+                            </span>
+                        </div>
+                        ${bookingServicesHtml}
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function calculatePaycheckTotals() {
+            let subtotal = 0;
+            const selectedBookings = document.querySelectorAll('.booking-checkbox:checked');
+            
+            selectedBookings.forEach(checkbox => {
+                const bookingId = Number(checkbox.value);
+                const booking = bookings.find(b => b.id === bookingId);
+                
+                if (booking && booking.serviceDetails) {
+                    booking.serviceDetails.forEach(sd => {
+                        const service = services.find(s => s.serviceName === sd.name);
+                        if (service) {
+                            const hours = sd.hours || 1;
+                            subtotal += service.doulaPayout * hours;
+                        }
+                    });
+                }
+            });
+
+            const hstToggle = document.getElementById('hstToggle');
+            const includeHst = hstToggle && hstToggle.checked;
+            const hst = includeHst ? (subtotal * 0.13) : 0;
+            const total = subtotal + hst;
+            
+            document.getElementById('paycheckSubtotal').textContent = `${subtotal.toFixed(2)}`;
+            document.getElementById('paycheckHst').textContent = `${hst.toFixed(2)}`;
+            document.getElementById('paycheckTotal').textContent = `${total.toFixed(2)}`;
+            
+            const hstRow = document.getElementById('paycheckHstRow');
+            if (hstRow) {
+                hstRow.style.display = includeHst ? 'block' : 'none';
+            }
         }
         
         function editPaycheck(id) {
@@ -953,120 +1248,54 @@
             form.elements.weekNumber.value = paycheck.weekNumber || '';
             form.elements.invoiceDate.value = paycheck.invoiceDate || '';
 
-            const container = document.getElementById('paycheckServicesContainer');
-            container.innerHTML = ''; // Clear existing lines
-
-            if (paycheck.serviceDetails && paycheck.serviceDetails.length > 0) {
-                paycheck.serviceDetails.forEach(detail => {
-                    addPaycheckServiceLine();
-                    const lines = container.querySelectorAll('.service-line-item');
-                    const lastLine = lines[lines.length - 1];
-                    const service = services.find(s => s.serviceName === detail.name);
-                    
-                    if (service) {
-                        lastLine.querySelector('.paycheck-service').value = service.id;
-                        lastLine.querySelector('.paycheck-quantity').value = detail.quantity;
-                    }
-                });
-            } else {
-                addPaycheckServiceLine();
+            const hstToggle = document.getElementById('hstToggle');
+            if (hstToggle) {
+                hstToggle.checked = paycheck.hst && paycheck.hst > 0;
             }
 
-            // Must manually trigger total update after populating lines
-            calculatePaycheckTotals(); 
+            loadDoulaBookings();
+
+            setTimeout(() => {
+                if (paycheck.serviceDetails && paycheck.serviceDetails.length > 0) {
+                    paycheck.serviceDetails.forEach(sd => {
+                        const checkboxes = document.querySelectorAll(`.service-checkbox[data-service="${sd.name}"]`);
+                        checkboxes.forEach(checkbox => {
+                            checkbox.checked = true;
+                            
+                            if (sd.hours) {
+                                const bookingId = checkbox.getAttribute('data-booking');
+                                const hoursInput = document.querySelector(
+                                    `.booking-service-hours[data-booking="${bookingId}"][data-service="${sd.name}"]`
+                                );
+                                if (hoursInput) {
+                                    hoursInput.value = sd.hours;
+                                }
+                            }
+                        });
+                    });
+                }
+                calculatePaycheckTotals();
+            }, 100);
 
             openModal('paycheckModal');
-        }
-
-        function calculatePaycheckTotals() {
-            let subtotal = 0;
-            const lines = document.getElementById('paycheckServicesContainer').querySelectorAll('.service-line-item');
-
-            lines.forEach(line => {
-                const serviceId = line.querySelector('.paycheck-service').value;
-                const quantity = Number(line.querySelector('.paycheck-quantity').value);
-                const service = services.find(s => s.id == serviceId);
-                
-                if (service && quantity > 0) {
-                    subtotal += service.doulaPayout * quantity;
-                }
-            });
-
-            const hst = subtotal * 0.13;
-            const total = subtotal + hst;
-            
-            document.getElementById('paycheckSubtotal').textContent = `$${subtotal.toFixed(2)}`;
-            document.getElementById('paycheckHst').textContent = `$${hst.toFixed(2)}`;
-            document.getElementById('paycheckTotal').textContent = `$${total.toFixed(2)}`;
-        }
-        
-        // Listen for changes in the Paycheck modal to update totals
-        document.getElementById('paycheckModal').addEventListener('input', (e) => {
-             // Only recalculate on changes to service or quantity inputs inside a line item
-             if (e.target.classList.contains('paycheck-service') || e.target.classList.contains('paycheck-quantity')) {
-                calculatePaycheckTotals();
-             }
-        });
-
-        function addPaycheckServiceLine() {
-            const container = document.getElementById('paycheckServicesContainer');
-            
-            // Generate service options dynamically based on available services
-            const serviceOptions = services.map(s => 
-                `<option value="${s.id}">${escapeHtml(s.serviceName)} - $${Number(s.doulaPayout).toFixed(2)} p/u</option>`
-            ).join('');
-
-            const line = document.createElement('div');
-            line.className = 'service-line-item form-grid';
-            line.style.marginBottom = '10px';
-            line.style.alignItems = 'flex-end';
-            line.style.gap = '10px';
-            line.style.gridTemplateColumns = '3fr 1fr auto';
-
-            line.innerHTML = `
-                <div class="form-group" style="margin: 0; flex:3;">
-                    <label>Service</label>
-                    <select class="paycheck-service" required style="width:100%;">
-                        <option value="">Select Service</option>
-                        ${serviceOptions}
-                    </select>
-                </div>
-                <div class="form-group" style="margin: 0; flex:1;">
-                    <label>Qty</label>
-                    <input type="number" class="paycheck-quantity" min="1" value="1" required style="width:100%;">
-                </div>
-                <button type="button" class="btn btn-small btn-remove-line" onclick="this.closest('.service-line-item').remove(); calculatePaycheckTotals();">X</button>
-            `;
-            container.appendChild(line);
-
-            // Recalculate totals every time a new line is added
-            calculatePaycheckTotals();
         }
 
         // --- SUMMARY REPORTS ---
 
         function renderSummary() {
             const statsContainer = document.getElementById('summaryStats');
-            const bookingsCompleted = bookings.filter(b => b.status === 'Completed').length;
+            const bookingsCompleted = bookings.filter(b => b.bookingStatus === 'Archive').length;
             const totalDoulas = doulas.length;
-            const totalProfit = paychecks.reduce((sum, p) => {
-                // Find services used in paycheck
-                const paycheckServiceDetails = p.serviceDetails || [];
-                
-                const paycheckProfit = paycheckServiceDetails.reduce((pSum, sd) => {
+            const totalProfit = bookings.reduce((sum, b) => {
+                if (!b.serviceDetails) return sum;
+                return sum + b.serviceDetails.reduce((bSum, sd) => {
                     const service = services.find(s => s.serviceName === sd.name);
                     if (service) {
-                         // Calculate profit per service based on quantity
-                         const profitPerUnit = service.clientPrice - service.doulaPayout;
-                         return pSum + (profitPerUnit * sd.quantity);
+                        const hours = sd.hours || 1;
+                        return bSum + (service.agencyProfit * hours);
                     }
-                    return pSum;
+                    return bSum;
                 }, 0);
-                
-                // Note: This logic for profit is flawed if the service details in paychecks.json 
-                // only contain the payout amount, not the client price. 
-                // Assuming services object is the source of truth for profit.
-                return sum + paycheckProfit;
             }, 0);
 
             statsContainer.innerHTML = `
@@ -1080,16 +1309,15 @@
                 </div>
                 <div class="stat-card">
                     <div class="stat-label">Total Estimated Profit (YTD)</div>
-                    <div class="stat-value">$${totalProfit.toFixed(2)}</div>
+                    <div class="stat-value">${totalProfit.toFixed(2)}</div>
                 </div>
             `;
             
-            // Service Report by Week
             const reportWeekInput = document.getElementById('reportWeek');
             const currentWeek = reportWeekInput.value || getDefaultWeek();
             
             if (!reportWeekInput.value) {
-                reportWeekInput.value = currentWeek; // Set default value visually
+                reportWeekInput.value = currentWeek;
             }
 
             const weekNumber = currentWeek.substring(currentWeek.indexOf('W') + 1);
@@ -1100,17 +1328,17 @@
             weeklyPaychecks.forEach(p => {
                 (p.serviceDetails || []).forEach(sd => {
                     const sName = sd.name;
-                    const amount = sd.amount; // This is the doula payout amount for this service line
-                    const quantity = sd.quantity;
+                    const quantity = sd.quantity || 1;
+                    const hours = sd.hours || 1;
                     
                     if (!serviceCounts[sName]) {
                         serviceCounts[sName] = { qty: 0, amt: 0 };
                     }
                     serviceCounts[sName].qty += quantity;
-                    // For the report, let's track the Client Price total (not doula payout)
+                    
                     const serviceConfig = services.find(s => s.serviceName === sName);
                     if (serviceConfig) {
-                        serviceCounts[sName].amt += serviceConfig.clientPrice * quantity;
+                        serviceCounts[sName].amt += serviceConfig.clientPrice * hours;
                     }
                 });
             });
@@ -1132,7 +1360,7 @@
                 html += `<tr> 
                     <td>${sName}</td> 
                     <td>${serviceCounts[sName].qty}</td> 
-                    <td>$${serviceCounts[sName].amt.toFixed(2)}</td> 
+                    <td>${serviceCounts[sName].amt.toFixed(2)}</td> 
                 </tr>`;
             });
 
@@ -1147,16 +1375,8 @@
         function getDefaultWeek() {
             const now = new Date();
             const year = now.getFullYear();
-            
-            // Calculate week number (ISO 8601 compliant)
-            const d = new Date(Date.UTC(now.getFullYear(), now.getMonth(), now.getDate()));
-            const dayNum = d.getUTCDay() || 7;
-            d.setUTCDate(d.getUTCDate() + 4 - dayNum);
-            const yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1));
-            const weekNo = Math.ceil((((d - yearStart) / 86400000) + 1) / 7);
-            
-            const weekStr = String(weekNo).padStart(2, '0');
-            return `${year}-W${weekStr}`;
+            const weekNo = getWeekNumber(now);
+            return `${year}-W${weekNo}`;
         }
         
         // --- SAVE / EDIT / DELETE LOGIC ---
@@ -1164,24 +1384,32 @@
         async function saveBooking(e) {
             e.preventDefault();
             const formData = new FormData(e.target);
-            const selectedServices = Array.from(document.querySelectorAll('#bookingServicesContainer input:checked'))
-                .map(cb => {
-                    const service = services.find(s => s.id == cb.value);
-                    return service ? service.serviceName : '';
-                }).filter(Boolean);
+            
+            const selectedDoulas = Array.from(document.querySelectorAll('#bookingDoulasContainer input:checked'))
+                .map(cb => cb.getAttribute('data-name'))
+                .filter(Boolean);
+            
+            const selectedServices = [];
+            document.querySelectorAll('#bookingServicesContainer .service-checkbox:checked').forEach(cb => {
+                const serviceName = cb.getAttribute('data-name');
+                const hoursInput = cb.parentElement.querySelector('.service-hours');
+                const hours = hoursInput ? Number(hoursInput.value) || 1 : 1;
+                selectedServices.push({ name: serviceName, hours: hours });
+            });
             
             const booking = {
                 clientName: formData.get('clientName'),
+                invoiceNumber: formData.get('invoiceNumber'),
                 dueDate: formData.get('dueDate'),
                 phone: formData.get('phone'),
                 email: formData.get('email'),
-                services: selectedServices.join(', '),
-                assignedDoula: formData.get('assignedDoula'),
-                status: formData.get('status'),
-                paid: formData.get('paid')
+                assignedDoulas: selectedDoulas.join(', '),
+                bookingStatus: formData.get('bookingStatus'),
+                paymentStatus: formData.get('paymentStatus'),
+                serviceDetails: selectedServices,
+                services: selectedServices.map(s => s.name).join(', ')
             };
 
-            // FIX 2: Added try...catch block to handle API errors and provide user feedback
             try {
                 if (editingId) {
                     booking.id = editingId;
@@ -1189,7 +1417,6 @@
                     if(idx !== -1) bookings[idx] = { ...bookings[idx], ...booking };
                     await apiPut(`/api/bookings/${editingId}`, booking);
                 } else {
-                    // Note: The API should return the new object with an ID
                     const created = await apiPost('/api/bookings', booking);
                     bookings.push(created);
                 }
@@ -1208,8 +1435,13 @@
                 name: formData.get('name'),
                 phone: formData.get('phone'),
                 email: formData.get('email'),
+                sinNumber: formData.get('sinNumber'),
                 address: formData.get('address'),
-                servicesOffered: formData.get('servicesOffered')
+                servicesOffered: formData.get('servicesOffered'),
+                cprCertified: formData.get('cprCertified') === 'on',
+                cprExpiry: formData.get('cprExpiry'),
+                policeCheck: formData.get('policeCheck') === 'on',
+                insuranceUpToDate: formData.get('insuranceUpToDate') === 'on'
             };
             
             try {
@@ -1223,7 +1455,7 @@
                     doulas.push(created);
                 }
                 renderDoulas();
-                updateDoulaDropdowns(); // Update doula dropdowns across the app
+                updateDoulaDropdowns();
                 closeModal('doulaModal');
             } catch (error) {
                 console.error("Error saving doula:", error);
@@ -1252,9 +1484,7 @@
                     services.push(created);
                 }
                 renderServices();
-                // We should also update booking service checkboxes and paycheck service dropdowns
-                renderBookingServicesCheckboxes(); 
-                updatePaycheckServiceDropdowns();
+                renderBookingServicesCheckboxes();
                 closeModal('serviceModal');
             } catch (error) {
                 console.error("Error saving service:", error);
@@ -1266,42 +1496,70 @@
             e.preventDefault();
             const formData = new FormData(e.target);
             
-            // Re-calculate totals based on current form state before saving
+            const selectedServices = Array.from(document.querySelectorAll('.service-checkbox:checked'));
+            
+            if (selectedServices.length === 0) {
+                alert("Please select at least one service to pay for.");
+                return;
+            }
+
+            const bookingIds = new Set();
             let subtotal = 0;
             const serviceDetails = [];
-            const lines = document.getElementById('paycheckServicesContainer').querySelectorAll('.service-line-item');
 
-            lines.forEach(line => {
-                const serviceId = line.querySelector('.paycheck-service').value;
-                const quantity = Number(line.querySelector('.paycheck-quantity').value);
-                const service = services.find(s => s.id == serviceId);
+            selectedServices.forEach(checkbox => {
+                const bookingId = Number(checkbox.getAttribute('data-booking'));
+                const serviceName = checkbox.getAttribute('data-service');
+                const isHourly = checkbox.getAttribute('data-hourly') === 'true';
                 
-                if (service && quantity > 0) {
-                    const amount = service.doulaPayout * quantity;
-                    serviceDetails.push({ name: service.serviceName, quantity: quantity, amount: amount });
+                bookingIds.add(bookingId);
+                
+                const service = services.find(s => s.serviceName === serviceName);
+                if (service) {
+                    let hours = 1;
+                    if (isHourly) {
+                        const hoursInput = document.querySelector(
+                            `.booking-service-hours[data-booking="${bookingId}"][data-service="${serviceName}"]`
+                        );
+                        hours = hoursInput ? Number(hoursInput.value) || 1 : 1;
+                    }
+                    
+                    const amount = service.doulaPayout * hours;
+                    
+                    const existingService = serviceDetails.find(s => s.name === serviceName);
+                    if (existingService) {
+                        existingService.quantity += 1;
+                        if (isHourly) {
+                            existingService.hours = (existingService.hours || 0) + hours;
+                        }
+                        existingService.amount += amount;
+                    } else {
+                        serviceDetails.push({ 
+                            name: serviceName, 
+                            quantity: 1, 
+                            hours: isHourly ? hours : undefined,
+                            amount: amount 
+                        });
+                    }
                     subtotal += amount;
                 }
             });
 
-            // Basic validation
-            if (serviceDetails.length === 0) {
-                 alert("Please add at least one service line item.");
-                 return;
-            }
-
-            const hst = +(subtotal * 0.13).toFixed(2);
+            const hstToggle = document.getElementById('hstToggle');
+            const includeHst = hstToggle && hstToggle.checked;
+            const hst = includeHst ? +(subtotal * 0.13).toFixed(2) : 0;
 
             const paycheck = {
                 doula: formData.get('doula'),
                 weekNumber: formData.get('weekNumber'),
                 invoiceDate: formData.get('invoiceDate'),
-                serviceDetails: serviceDetails, // Array of service objects with name, quantity, amount
+                bookingIds: Array.from(bookingIds),
+                serviceDetails: serviceDetails,
                 subtotal: +subtotal.toFixed(2),
                 hst: hst,
                 total: +(subtotal + hst).toFixed(2)
             };
             
-            // FIX 2: Added try...catch block to handle API errors and provide user feedback
             try {
                 if (editingId) {
                     paycheck.id = editingId;
@@ -1315,40 +1573,28 @@
                 renderPaychecks();
                 updatePaycheckWeekFilter();
                 closeModal('paycheckModal');
-                renderSummary(); // Update reports after adding a paycheck
+                renderSummary();
             } catch (error) {
                 console.error("Error saving paycheck:", error);
                 alert('Failed to save paycheck. Check the server connection and ensure all required fields are filled.');
             }
         }
 
-        // MODIFIED: Logic simplified, relies on openModal to set title
         function editBooking(id) {
-            closeModal('detailsModal'); // Close details if open
+            closeModal('detailsModal');
             const booking = bookings.find(b => b.id === id);
             if (!booking) return;
 
-            editingId = id; // Crucial: set editingId before opening the modal
+            editingId = id;
             const form = document.getElementById('bookingForm');
             
             form.elements.clientName.value = booking.clientName || '';
+            form.elements.invoiceNumber.value = booking.invoiceNumber || '';
             form.elements.dueDate.value = booking.dueDate || '';
             form.elements.phone.value = booking.phone || '';
             form.elements.email.value = booking.email || '';
-            form.elements.assignedDoula.value = booking.assignedDoula || '';
-            form.elements.status.value = booking.status || 'Current';
-            form.elements.paid.value = booking.paid || 'No';
-
-            // Handle services checkboxes
-            const selectedServices = (booking.services || '').split(', ').filter(Boolean);
-            document.querySelectorAll('#bookingServicesContainer input[type="checkbox"]').forEach(cb => {
-                // Remove the checked state first
-                cb.checked = false; 
-                // Then set checked state if service is in the list
-                if (selectedServices.includes(cb.name)) {
-                    cb.checked = true;
-                }
-            });
+            form.elements.bookingStatus.value = booking.bookingStatus || 'Current';
+            form.elements.paymentStatus.value = booking.paymentStatus || 'Deposit';
 
             openModal('bookingModal');
         }
@@ -1363,8 +1609,13 @@
             form.elements.name.value = doula.name || '';
             form.elements.phone.value = doula.phone || '';
             form.elements.email.value = doula.email || '';
+            form.elements.sinNumber.value = doula.sinNumber || '';
             form.elements.address.value = doula.address || '';
             form.elements.servicesOffered.value = doula.servicesOffered || '';
+            form.elements.cprCertified.checked = doula.cprCertified || false;
+            form.elements.cprExpiry.value = doula.cprExpiry || '';
+            form.elements.policeCheck.checked = doula.policeCheck || false;
+            form.elements.insuranceUpToDate.checked = doula.insuranceUpToDate || false;
 
             openModal('doulaModal');
         }
@@ -1375,27 +1626,25 @@
             try {
                 await apiDelete(`/api/${type}s/${id}`);
                 
-                // Remove from local array
                 if (type === 'booking') {
                     bookings = bookings.filter(b => b.id !== id);
                     renderBookings();
                 } else if (type === 'doula') {
                     doulas = doulas.filter(d => d.id !== id);
                     renderDoulas();
-                    updateDoulaDropdowns(); // Update dropdowns after delete
+                    updateDoulaDropdowns();
                 } else if (type === 'service') {
                     services = services.filter(s => s.id !== id);
                     renderServices();
-                    renderBookingServicesCheckboxes(); // Re-render service options
-                    updatePaycheckServiceDropdowns();
+                    renderBookingServicesCheckboxes();
                 } else if (type === 'paycheck') {
                     paychecks = paychecks.filter(p => p.id !== id);
                     renderPaychecks();
                     updatePaycheckWeekFilter();
-                    renderSummary(); // Update reports after delete
+                    renderSummary();
                 }
                 
-                closeModal('detailsModal'); // Close any details modal that might be open
+                closeModal('detailsModal');
                 alert(`${type.charAt(0).toUpperCase() + type.slice(1)} deleted successfully.`);
             } catch (error) {
                 console.error(`Error deleting ${type}:`, error);
@@ -1405,38 +1654,78 @@
         
         // --- MODAL / HELPER FUNCTIONS ---
 
-        function renderBookingServicesCheckboxes(selectedServiceNames = []) {
+        function isHourlyService(serviceName) {
+            return serviceName.toLowerCase().includes('/ hr') || 
+                   serviceName.toLowerCase().includes('per hour') ||
+                   serviceName.toLowerCase().includes('hourly');
+        }
+
+        function renderBookingServicesCheckboxes() {
             const container = document.getElementById('bookingServicesContainer');
             if (!container) return;
             
+            const existingBooking = editingId ? bookings.find(b => b.id === editingId) : null;
+            const existingServices = existingBooking?.serviceDetails || [];
+            
             container.innerHTML = services.map(s => {
-                // If editingId is set, get the existing service string from the booking being edited
-                const isSelected = selectedServiceNames.includes(s.serviceName);
+                const existing = existingServices.find(es => es.name === s.serviceName);
+                const isChecked = existing ? 'checked' : '';
+                const hours = existing?.hours || 1;
+                const showHours = isHourlyService(s.serviceName);
 
-                // Use the service ID as the value for ease of lookup during save
+                let hoursInput = '';
+                if (showHours) {
+                    hoursInput = `
+                        <div class="service-hours-input" style="display: ${isChecked ? 'flex' : 'none'};">
+                            <label style="margin: 0;">Hours:</label>
+                            <input type="number" class="service-hours" min="0.5" step="0.5" value="${hours}">
+                        </div>
+                    `;
+                }
+
+                return `
+                    <div style="margin-bottom: 10px;">
+                        <label>
+                            <input type="checkbox" class="service-checkbox" data-name="${escapeHtml(s.serviceName)}" data-hourly="${showHours}" value="${s.id}" ${isChecked} onchange="toggleServiceHours(this)">
+                            <span>${escapeHtml(s.serviceName)}</span>
+                        </label>
+                        ${hoursInput}
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function toggleServiceHours(checkbox) {
+            const isHourly = checkbox.getAttribute('data-hourly') === 'true';
+            if (!isHourly) return;
+            
+            const hoursDiv = checkbox.parentElement.nextElementSibling;
+            if (hoursDiv && hoursDiv.classList.contains('service-hours-input')) {
+                hoursDiv.style.display = checkbox.checked ? 'flex' : 'none';
+            }
+        }
+
+        function renderBookingDoulasCheckboxes() {
+            const container = document.getElementById('bookingDoulasContainer');
+            if (!container) return;
+            
+            const existingBooking = editingId ? bookings.find(b => b.id === editingId) : null;
+            const existingDoulas = existingBooking?.assignedDoulas?.split(', ') || [];
+            
+            container.innerHTML = doulas.map(d => {
+                const isChecked = existingDoulas.includes(d.name) ? 'checked' : '';
                 return `
                     <label>
-                        <input type="checkbox" name="${escapeHtml(s.serviceName)}" value="${s.id}" ${isSelected ? 'checked' : ''}>
-                        <span>${escapeHtml(s.serviceName)}</span>
+                        <input type="checkbox" data-name="${escapeHtml(d.name)}" value="${d.id}" ${isChecked}>
+                        <span>${escapeHtml(d.name)}</span>
                     </label>
                 `;
             }).join('');
         }
 
-        function updatePaycheckServiceDropdowns() {
-            const serviceOptions = services.map(s => 
-                `<option value="${s.id}">${escapeHtml(s.serviceName)} - $${Number(s.doulaPayout).toFixed(2)} p/u</option>`
-            ).join('');
-
-            // Only update the template, the current modal needs to be closed/reopened or manually updated
-            // Since this function is mostly for saveService, we just make sure the new service is available next time.
-        }
-
-        // MODIFIED: Logic updated to only reset form if not editing, and set title dynamically
         function openModal(modalId) {
             document.getElementById(modalId).classList.add('active'); 
             
-            // Clear forms ONLY if we are NOT in an edit flow (editingId is null)
             if (editingId === null) {
                 const form = document.querySelector(`#${modalId} form`);
                 if(form) form.reset();
@@ -1444,14 +1733,8 @@
 
             if (modalId === 'bookingModal') {
                 document.getElementById('bookingModalTitle').textContent = editingId ? 'Edit Booking' : 'New Booking';
-                
-                // For a new booking, render all checkboxes unchecked.
-                const selectedServiceNames = editingId 
-                    ? (bookings.find(b => b.id === editingId)?.services || '').split(', ').filter(Boolean)
-                    : [];
-
-                renderBookingServicesCheckboxes(selectedServiceNames);
-
+                renderBookingServicesCheckboxes();
+                renderBookingDoulasCheckboxes();
             } else if (modalId === 'doulaModal') {
                 document.getElementById('doulaModalTitle').textContent = editingId ? 'Edit Doula' : 'Add Doula';
             } else if (modalId === 'serviceModal') {
@@ -1459,13 +1742,12 @@
             } else if (modalId === 'paycheckModal') {
                 document.getElementById('paycheckModalTitle').textContent = editingId ? 'Edit Paycheck' : 'Generate Paycheck';
                 
-                // Only clear and add line for *new* paycheck
                 if(editingId === null) {
-                    document.getElementById('paycheckServicesContainer').innerHTML = '';
-                    addPaycheckServiceLine();
-                    calculatePaycheckTotals(); // Recalculate for the single default line
-                } 
-                // If editing, logic is handled in editPaycheck, which calls calculatePaycheckTotals()
+                    document.getElementById('paycheckBookingsContainer').innerHTML = '<p style="color: #999; text-align: center;">Select a doula to see their bookings</p>';
+                    const hstToggle = document.getElementById('hstToggle');
+                    if (hstToggle) hstToggle.checked = false;
+                    calculatePaycheckTotals();
+                }
             }
         }
 
@@ -1474,22 +1756,18 @@
             editingId = null;
         }
 
-        // NEW: Function to show the main app
         function showMainApp() {
             document.getElementById('loginModal').classList.remove('active');
             document.getElementById('mainAppContainer').style.display = 'block';
-            initApp(); // Load data once logged in
+            initApp();
         }
         
-        // --- DROPDOWN POPULATION ---
-
         function updateDoulaDropdowns() {
-            const selects = [document.getElementById('assignedDoula'), document.getElementById('paycheckDoula'), document.getElementById('paycheckDoulaFilter')];
+            const selects = [document.getElementById('paycheckDoula'), document.getElementById('paycheckDoulaFilter')];
             selects.forEach(select => {
                 if (!select) return;
                 const currentValue = select.value;
                 
-                // Filter dropdowns to only include an "All Doulas" option for the filter
                 if (select.id === 'paycheckDoulaFilter') {
                      select.innerHTML = '<option value="">All Doulas</option>' + 
                         doulas.map(d => `<option value="${escapeHtml(d.name)}">${escapeHtml(d.name)}</option>`).join('');
@@ -1502,7 +1780,6 @@
             });
         }
         
-        // --- INIT APP FUNCTION ---
         async function initApp() {
             try {
                 const all = await apiGet('/api/all');
@@ -1517,20 +1794,16 @@
                 renderPaychecks();
                 updatePaycheckWeekFilter();
                 updateDoulaDropdowns();
-                renderSummary(); // Initial load of reports
+                renderSummary();
             } catch (err) {
                 console.error('Load failed', err);
                 alert('Could not load data. Check server.');
             }
         }
 
-        // --- INITIAL PAGE LOAD CHECK ---
         window.addEventListener('load', () => {
             if (localStorage.getItem(AUTH_KEY) === 'true') {
-                // If auth key exists, show the main app immediately
                 showMainApp();
-            } else {
-                // Otherwise, the login modal is active by default in HTML
             }
         });
 
