@@ -311,18 +311,47 @@
         .booking-item {
             padding: 10px;
             border-bottom: 1px solid #eee;
-            display: flex;
-            align-items: center;
-            gap: 10px;
         }
 
         .booking-item:last-child {
             border-bottom: none;
         }
 
-        .booking-item input[type="checkbox"] {
-            width: 18px;
-            height: 18px;
+        .booking-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+            padding: 10px;
+            background: white;
+            border-radius: 6px;
+            margin-bottom: 5px;
+        }
+
+        .booking-header:hover {
+            background: #f9f9f9;
+        }
+
+        .booking-expand-icon {
+            font-size: 1.2em;
+            transition: transform 0.2s;
+            color: var(--secondary);
+        }
+
+        .booking-expand-icon.expanded {
+            transform: rotate(90deg);
+        }
+
+        .booking-services-container {
+            display: none;
+            margin-left: 30px;
+            margin-top: 5px;
+            padding-left: 15px;
+            border-left: 2px solid var(--secondary);
+        }
+
+        .booking-services-container.expanded {
+            display: block;
         }
 
         .booking-item-details {
@@ -423,7 +452,7 @@
 
             <div id="bookingsTab" class="tab-content active">
                 <div class="controls-bar">
-                    <button class="btn" onclick="newBooking()">+ Log New Booking</button>
+                    <button class="btn" onclick="newBooking()">+ New Booking</button>
                     <input type="text" id="bookingSearch" class="search-input" placeholder="Search Bookings..." onkeyup="renderBookings()">
                     <select id="bookingStatusFilter" class="filter-select" onchange="renderBookings()">
                         <option value="">All Statuses</option>
@@ -1145,6 +1174,7 @@
 
             if (!selectedDoula) {
                 container.innerHTML = '<p style="color: #999; text-align: center;">Select a doula to see their bookings</p>';
+                calculatePaycheckTotals();
                 return;
             }
 
@@ -1154,6 +1184,7 @@
 
             if (doulaBookings.length === 0) {
                 container.innerHTML = '<p style="color: #999; text-align: center;">No bookings found for this doula</p>';
+                calculatePaycheckTotals();
                 return;
             }
 
@@ -1161,7 +1192,33 @@
                 const bookingServicesHtml = (b.serviceDetails || []).map(sd => {
                     const service = services.find(s => s.serviceName === sd.name);
                     const isHourly = isHourlyService(sd.name);
-                    const currentHours = sd.hours || 1;
+                    const bookedHours = sd.hours || 1;
+                    
+                    // Calculate hours already paid for this specific booking and service
+                    const paidHours = paychecks.reduce((total, paycheck) => {
+                        if (paycheck.doula !== selectedDoula) return total;
+                        if (!paycheck.bookingIds || !paycheck.bookingIds.includes(b.id)) return total;
+                        
+                        const paidService = (paycheck.serviceDetails || []).find(s => s.name === sd.name);
+                        if (paidService && paidService.hours) {
+                            return total + paidService.hours;
+                        }
+                        return total;
+                    }, 0);
+                    
+                    const remainingHours = bookedHours - paidHours;
+                    
+                    // Don't show service if no hours remain
+                    if (isHourly && remainingHours <= 0) {
+                        return `
+                            <div class="booking-service-item" style="opacity: 0.5;">
+                                <input type="checkbox" disabled>
+                                <span>${escapeHtml(sd.name)} - <em style="color: #999;">Fully paid</em></span>
+                            </div>
+                        `;
+                    }
+                    
+                    const maxHours = isHourly ? remainingHours : bookedHours;
                     
                     let hoursInput = '';
                     if (isHourly) {
@@ -1170,8 +1227,10 @@
                             <input type="number" class="booking-service-hours" 
                                    data-booking="${b.id}" 
                                    data-service="${escapeHtml(sd.name)}"
-                                   min="0.5" step="0.5" value="${currentHours}"
-                                   onchange="calculatePaycheckTotals()">
+                                   data-max="${maxHours}"
+                                   min="0.5" max="${maxHours}" step="0.5" value="${maxHours}"
+                                   oninput="validateHoursInput(this); calculatePaycheckTotals();">
+                            <span style="font-size: 0.85em; color: #999;">/ ${maxHours} remaining${paidHours > 0 ? ` (${paidHours} paid)` : ''}</span>
                         `;
                     }
 
@@ -1182,7 +1241,8 @@
                                    data-booking="${b.id}" 
                                    data-service="${escapeHtml(sd.name)}"
                                    data-hourly="${isHourly}"
-                                   onchange="calculatePaycheckTotals()">
+                                   data-max-hours="${maxHours}"
+                                   onchange="handleServiceCheckboxChange(this)">
                             <span>${escapeHtml(sd.name)}</span>
                             ${hoursInput}
                         </div>
@@ -1190,17 +1250,64 @@
                 }).join('');
 
                 return `
-                    <div class="booking-item" style="flex-direction: column; align-items: flex-start;">
-                        <div style="display: flex; width: 100%; align-items: center; gap: 10px;">
+                    <div class="booking-item">
+                        <div class="booking-header" onclick="toggleBookingServices(${b.id})">
+                            <span class="booking-expand-icon" id="expand-icon-${b.id}">▶</span>
                             <strong>${escapeHtml(b.clientName)}</strong>
                             <span style="font-size: 0.9em; color: #666;">
                                 Invoice: ${escapeHtml(b.invoiceNumber || 'N/A')}
                             </span>
                         </div>
-                        ${bookingServicesHtml}
+                        <div class="booking-services-container" id="services-${b.id}">
+                            ${bookingServicesHtml}
+                        </div>
                     </div>
                 `;
             }).join('');
+            
+            calculatePaycheckTotals();
+        }
+
+        function handleServiceCheckboxChange(checkbox) {
+            const isHourly = checkbox.getAttribute('data-hourly') === 'true';
+            
+            // If it's an hourly service and just checked, auto-select max hours
+            if (isHourly && checkbox.checked) {
+                const bookingId = checkbox.getAttribute('data-booking');
+                const serviceName = checkbox.getAttribute('data-service');
+                const hoursInput = document.querySelector(
+                    `.booking-service-hours[data-booking="${bookingId}"][data-service="${serviceName}"]`
+                );
+                if (hoursInput) {
+                    const maxHours = parseFloat(hoursInput.getAttribute('data-max'));
+                    hoursInput.value = maxHours;
+                }
+            }
+            
+            calculatePaycheckTotals();
+        }
+
+        function toggleBookingServices(bookingId) {
+            const servicesContainer = document.getElementById(`services-${bookingId}`);
+            const expandIcon = document.getElementById(`expand-icon-${bookingId}`);
+            
+            if (servicesContainer && expandIcon) {
+                servicesContainer.classList.toggle('expanded');
+                expandIcon.classList.toggle('expanded');
+            }
+        }
+
+        function validateHoursInput(input) {
+            const max = parseFloat(input.getAttribute('data-max'));
+            const value = parseFloat(input.value);
+            
+            if (value > max) {
+                input.value = max;
+                alert(`Cannot pay for more hours than booked. Maximum: ${max} hours`);
+            }
+            if (value < 0.5 && value > 0) {
+                input.value = 0.5;
+            }
         }
 
         function calculatePaycheckTotals() {
@@ -1258,17 +1365,23 @@
             setTimeout(() => {
                 if (paycheck.serviceDetails && paycheck.serviceDetails.length > 0) {
                     paycheck.serviceDetails.forEach(sd => {
-                        const checkboxes = document.querySelectorAll(`.service-checkbox[data-service="${sd.name}"]`);
-                        checkboxes.forEach(checkbox => {
-                            checkbox.checked = true;
+                        // Find the matching checkboxes for this service
+                        const matchingCheckboxes = document.querySelectorAll(`.service-checkbox[data-service="${sd.name}"]`);
+                        
+                        matchingCheckboxes.forEach(checkbox => {
+                            const bookingId = Number(checkbox.getAttribute('data-booking'));
                             
-                            if (sd.hours) {
-                                const bookingId = checkbox.getAttribute('data-booking');
-                                const hoursInput = document.querySelector(
-                                    `.booking-service-hours[data-booking="${bookingId}"][data-service="${sd.name}"]`
-                                );
-                                if (hoursInput) {
-                                    hoursInput.value = sd.hours;
+                            // Only check if this booking was in the original paycheck
+                            if (paycheck.bookingIds && paycheck.bookingIds.includes(bookingId)) {
+                                checkbox.checked = true;
+                                
+                                if (sd.hours) {
+                                    const hoursInput = document.querySelector(
+                                        `.booking-service-hours[data-booking="${bookingId}"][data-service="${sd.name}"]`
+                                    );
+                                    if (hoursInput) {
+                                        hoursInput.value = sd.hours;
+                                    }
                                 }
                             }
                         });
@@ -1392,9 +1505,19 @@
             const selectedServices = [];
             document.querySelectorAll('#bookingServicesContainer .service-checkbox:checked').forEach(cb => {
                 const serviceName = cb.getAttribute('data-name');
-                const hoursInput = cb.parentElement.querySelector('.service-hours');
-                const hours = hoursInput ? Number(hoursInput.value) || 1 : 1;
-                selectedServices.push({ name: serviceName, hours: hours });
+                const isHourly = cb.getAttribute('data-hourly') === 'true';
+                const parent = cb.parentElement.parentElement;
+                
+                let hours = undefined;
+                if (isHourly) {
+                    const hoursInput = parent.querySelector('.service-hours');
+                    hours = hoursInput ? Number(hoursInput.value) || 1 : 1;
+                }
+                
+                selectedServices.push({ 
+                    name: serviceName, 
+                    hours: hours
+                });
             });
             
             const booking = {
@@ -1526,21 +1649,12 @@
                     
                     const amount = service.doulaPayout * hours;
                     
-                    const existingService = serviceDetails.find(s => s.name === serviceName);
-                    if (existingService) {
-                        existingService.quantity += 1;
-                        if (isHourly) {
-                            existingService.hours = (existingService.hours || 0) + hours;
-                        }
-                        existingService.amount += amount;
-                    } else {
-                        serviceDetails.push({ 
-                            name: serviceName, 
-                            quantity: 1, 
-                            hours: isHourly ? hours : undefined,
-                            amount: amount 
-                        });
-                    }
+                    serviceDetails.push({ 
+                        name: serviceName, 
+                        quantity: 1,
+                        hours: isHourly ? hours : undefined,
+                        amount: amount 
+                    });
                     subtotal += amount;
                 }
             });
@@ -1699,8 +1813,10 @@
             const isHourly = checkbox.getAttribute('data-hourly') === 'true';
             if (!isHourly) return;
             
-            const hoursDiv = checkbox.parentElement.nextElementSibling;
-            if (hoursDiv && hoursDiv.classList.contains('service-hours-input')) {
+            const parent = checkbox.parentElement.parentElement;
+            const hoursDiv = parent.querySelector('.service-hours-input');
+            
+            if (hoursDiv) {
                 hoursDiv.style.display = checkbox.checked ? 'flex' : 'none';
             }
         }
@@ -1747,6 +1863,29 @@
                     const hstToggle = document.getElementById('hstToggle');
                     if (hstToggle) hstToggle.checked = false;
                     calculatePaycheckTotals();
+                }
+                
+                // Add event delegation for dynamic checkboxes and inputs
+                const container = document.getElementById('paycheckBookingsContainer');
+                if (container) {
+                    // Remove any existing listeners first
+                    container.replaceWith(container.cloneNode(true));
+                    const newContainer = document.getElementById('paycheckBookingsContainer');
+                    
+                    newContainer.addEventListener('change', function(e) {
+                        if (e.target.classList.contains('service-checkbox')) {
+                            console.log('Checkbox changed!');
+                            handleServiceCheckboxChange(e.target);
+                        }
+                    });
+                    
+                    newContainer.addEventListener('input', function(e) {
+                        if (e.target.classList.contains('booking-service-hours')) {
+                            console.log('Hours input changed to:', e.target.value);
+                            validateHoursInput(e.target);
+                            calculatePaycheckTotals();
+                        }
+                    });
                 }
             }
         }
