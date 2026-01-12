@@ -1068,7 +1068,16 @@
             openModal('serviceModal');
         }
         
-        // --- PAYCHECKS ---
+// --- PAYCHECKS ---
+
+        // Helper to get current ISO Week Number
+        function getCurrentWeekNumber() {
+            const d = new Date();
+            d.setHours(0, 0, 0, 0);
+            d.setDate(d.getDate() + 4 - (d.getDay() || 7));
+            const yearStart = new Date(d.getFullYear(), 0, 1);
+            return Math.ceil((((d - yearStart) / 86400000) + 1) / 7);
+        }
 
         function renderPaychecks() {
             const container = document.getElementById('paychecksTableBody');
@@ -1164,6 +1173,35 @@
 
         function newPaycheck() {
             editingId = null;
+            const form = document.getElementById('paycheckForm');
+            
+            if (form) {
+                form.reset(); // Clear previous data
+            }
+
+            // Target by name attribute exactly as seen in your inspection screenshot
+            const weekInput = document.querySelector('input[name="weekNumber"]');
+            const dateInput = document.querySelector('input[name="invoiceDate"]');
+
+            if (weekInput) {
+                const currentWeek = getCurrentWeekNumber();
+                weekInput.value = currentWeek;
+                console.log("Week set to:", currentWeek);
+            }
+
+            if (dateInput) {
+                const today = new Date().toISOString().split('T')[0];
+                dateInput.value = today;
+                console.log("Date set to:", today);
+            }
+
+            // Clear dynamic booking list
+            const container = document.getElementById('paycheckBookingsContainer');
+            if (container) {
+                container.innerHTML = '<p style="color: #999; text-align: center;">Select a doula to see their bookings</p>';
+            }
+            
+            calculatePaycheckTotals();
             openModal('paycheckModal');
         }
 
@@ -1190,25 +1228,17 @@
 
             container.innerHTML = doulaBookings.map(b => {
                 const bookingServicesHtml = (b.serviceDetails || []).map(sd => {
-                    const service = services.find(s => s.serviceName === sd.name);
                     const isHourly = isHourlyService(sd.name);
                     const bookedHours = sd.hours || 1;
                     
-                    // Calculate hours already paid for this specific booking and service
                     const paidHours = paychecks.reduce((total, paycheck) => {
-                        if (paycheck.doula !== selectedDoula) return total;
                         if (!paycheck.bookingIds || !paycheck.bookingIds.includes(b.id)) return total;
-                        
                         const paidService = (paycheck.serviceDetails || []).find(s => s.name === sd.name);
-                        if (paidService && paidService.hours) {
-                            return total + paidService.hours;
-                        }
-                        return total;
+                        return paidService && paidService.hours ? total + paidService.hours : total;
                     }, 0);
                     
                     const remainingHours = bookedHours - paidHours;
                     
-                    // Don't show service if no hours remain
                     if (isHourly && remainingHours <= 0) {
                         return `
                             <div class="booking-service-item" style="opacity: 0.5;">
@@ -1225,12 +1255,13 @@
                         hoursInput = `
                             <label style="margin: 0; font-size: 0.9em;">Hours:</label>
                             <input type="number" class="booking-service-hours" 
+                                   onchange="calculatePaycheckTotals()"
+                                   oninput="validateHoursInput(this); calculatePaycheckTotals()"
                                    data-booking="${b.id}" 
                                    data-service="${escapeHtml(sd.name)}"
                                    data-max="${maxHours}"
-                                   min="0.5" max="${maxHours}" step="0.5" value="${maxHours}"
-                                   oninput="validateHoursInput(this); calculatePaycheckTotals();">
-                            <span style="font-size: 0.85em; color: #999;">/ ${maxHours} remaining${paidHours > 0 ? ` (${paidHours} paid)` : ''}</span>
+                                   min="0.5" max="${maxHours}" step="0.5" value="${maxHours}">
+                            <span style="font-size: 0.85em; color: #999;">/ ${bookedHours} booked${paidHours > 0 ? ` (${paidHours} paid)` : ''}</span>
                         `;
                     }
 
@@ -1238,11 +1269,11 @@
                         <div class="booking-service-item">
                             <input type="checkbox" 
                                    class="service-checkbox" 
+                                   onchange="handleServiceCheckboxChange(this)"
                                    data-booking="${b.id}" 
                                    data-service="${escapeHtml(sd.name)}"
                                    data-hourly="${isHourly}"
-                                   data-max-hours="${maxHours}"
-                                   onchange="handleServiceCheckboxChange(this)">
+                                   data-max-hours="${maxHours}">
                             <span>${escapeHtml(sd.name)}</span>
                             ${hoursInput}
                         </div>
@@ -1271,7 +1302,6 @@
         function handleServiceCheckboxChange(checkbox) {
             const isHourly = checkbox.getAttribute('data-hourly') === 'true';
             
-            // If it's an hourly service and just checked, auto-select max hours
             if (isHourly && checkbox.checked) {
                 const bookingId = checkbox.getAttribute('data-booking');
                 const serviceName = checkbox.getAttribute('data-service');
@@ -1283,7 +1313,6 @@
                     hoursInput.value = maxHours;
                 }
             }
-            
             calculatePaycheckTotals();
         }
 
@@ -1299,7 +1328,7 @@
 
         function validateHoursInput(input) {
             const max = parseFloat(input.getAttribute('data-max'));
-            const value = parseFloat(input.value);
+            let value = parseFloat(input.value);
             
             if (value > max) {
                 input.value = max;
@@ -1312,20 +1341,24 @@
 
         function calculatePaycheckTotals() {
             let subtotal = 0;
-            const selectedBookings = document.querySelectorAll('.booking-checkbox:checked');
+            const selectedCheckboxes = document.querySelectorAll('.service-checkbox:checked');
             
-            selectedBookings.forEach(checkbox => {
-                const bookingId = Number(checkbox.value);
-                const booking = bookings.find(b => b.id === bookingId);
+            selectedCheckboxes.forEach(checkbox => {
+                const bookingId = Number(checkbox.getAttribute('data-booking'));
+                const serviceName = checkbox.getAttribute('data-service');
+                const isHourly = checkbox.getAttribute('data-hourly') === 'true';
                 
-                if (booking && booking.serviceDetails) {
-                    booking.serviceDetails.forEach(sd => {
-                        const service = services.find(s => s.serviceName === sd.name);
-                        if (service) {
-                            const hours = sd.hours || 1;
-                            subtotal += service.doulaPayout * hours;
-                        }
-                    });
+                const service = services.find(s => s.serviceName === serviceName);
+                
+                if (service) {
+                    let hours = 1;
+                    if (isHourly) {
+                        const hoursInput = document.querySelector(
+                            `.booking-service-hours[data-booking="${bookingId}"][data-service="${serviceName}"]`
+                        );
+                        hours = hoursInput ? (parseFloat(hoursInput.value) || 0) : 1;
+                    }
+                    subtotal += (service.doulaPayout * hours);
                 }
             });
 
@@ -1334,13 +1367,13 @@
             const hst = includeHst ? (subtotal * 0.13) : 0;
             const total = subtotal + hst;
             
-            document.getElementById('paycheckSubtotal').textContent = `${subtotal.toFixed(2)}`;
-            document.getElementById('paycheckHst').textContent = `${hst.toFixed(2)}`;
-            document.getElementById('paycheckTotal').textContent = `${total.toFixed(2)}`;
+            document.getElementById('paycheckSubtotal').textContent = subtotal.toFixed(2);
+            document.getElementById('paycheckHst').textContent = hst.toFixed(2);
+            document.getElementById('paycheckTotal').textContent = total.toFixed(2);
             
             const hstRow = document.getElementById('paycheckHstRow');
             if (hstRow) {
-                hstRow.style.display = includeHst ? 'block' : 'none';
+                hstRow.style.display = includeHst ? 'flex' : 'none';
             }
         }
         
@@ -1357,7 +1390,7 @@
 
             const hstToggle = document.getElementById('hstToggle');
             if (hstToggle) {
-                hstToggle.checked = paycheck.hst && paycheck.hst > 0;
+                hstToggle.checked = !!(paycheck.hst && paycheck.hst > 0);
             }
 
             loadDoulaBookings();
@@ -1365,23 +1398,18 @@
             setTimeout(() => {
                 if (paycheck.serviceDetails && paycheck.serviceDetails.length > 0) {
                     paycheck.serviceDetails.forEach(sd => {
-                        // Find the matching checkboxes for this service
                         const matchingCheckboxes = document.querySelectorAll(`.service-checkbox[data-service="${sd.name}"]`);
                         
                         matchingCheckboxes.forEach(checkbox => {
                             const bookingId = Number(checkbox.getAttribute('data-booking'));
                             
-                            // Only check if this booking was in the original paycheck
                             if (paycheck.bookingIds && paycheck.bookingIds.includes(bookingId)) {
                                 checkbox.checked = true;
-                                
                                 if (sd.hours) {
                                     const hoursInput = document.querySelector(
                                         `.booking-service-hours[data-booking="${bookingId}"][data-service="${sd.name}"]`
                                     );
-                                    if (hoursInput) {
-                                        hoursInput.value = sd.hours;
-                                    }
+                                    if (hoursInput) hoursInput.value = sd.hours;
                                 }
                             }
                         });
@@ -1839,7 +1867,7 @@
             }).join('');
         }
 
-        function openModal(modalId) {
+function openModal(modalId) {
             document.getElementById(modalId).classList.add('active'); 
             
             if (editingId === null) {
@@ -1859,6 +1887,15 @@
                 document.getElementById('paycheckModalTitle').textContent = editingId ? 'Edit Paycheck' : 'Generate Paycheck';
                 
                 if(editingId === null) {
+                    // --- FIX STARTS HERE ---
+                    // Set defaults AFTER the form.reset() above has finished
+                    const weekInput = document.querySelector('input[name="weekNumber"]');
+                    const dateInput = document.querySelector('input[name="invoiceDate"]');
+
+                    if (weekInput) weekInput.value = getCurrentWeekNumber();
+                    if (dateInput) dateInput.value = new Date().toISOString().split('T')[0];
+                    // --- FIX ENDS HERE ---
+
                     document.getElementById('paycheckBookingsContainer').innerHTML = '<p style="color: #999; text-align: center;">Select a doula to see their bookings</p>';
                     const hstToggle = document.getElementById('hstToggle');
                     if (hstToggle) hstToggle.checked = false;
@@ -1868,28 +1905,28 @@
                 // Add event delegation for dynamic checkboxes and inputs
                 const container = document.getElementById('paycheckBookingsContainer');
                 if (container) {
-                    // Remove any existing listeners first
                     container.replaceWith(container.cloneNode(true));
                     const newContainer = document.getElementById('paycheckBookingsContainer');
                     
                     newContainer.addEventListener('change', function(e) {
                         if (e.target.classList.contains('service-checkbox')) {
-                            console.log('Checkbox changed!');
-                            handleServiceCheckboxChange(e.target);
+                            setTimeout(() => {
+                                handleServiceCheckboxChange(e.target);
+                            }, 0);
                         }
                     });
                     
                     newContainer.addEventListener('input', function(e) {
                         if (e.target.classList.contains('booking-service-hours')) {
-                            console.log('Hours input changed to:', e.target.value);
                             validateHoursInput(e.target);
-                            calculatePaycheckTotals();
+                            setTimeout(() => {
+                                calculatePaycheckTotals();
+                            }, 0);
                         }
                     });
                 }
             }
         }
-
         function closeModal(modalId) {
             document.getElementById(modalId).classList.remove('active');
             editingId = null;
